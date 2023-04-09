@@ -1,0 +1,8 @@
+nodes:
+- PCH:
+    messages:
+    - Status:
+        id: 0x40
+        signals:
+
+
