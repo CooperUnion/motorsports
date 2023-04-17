@@ -2,7 +2,8 @@ nodes:
 - PCH:
     messages:
     - Status:
+        cycletime: 20
         id: 0x40
         signals:
-
-
+        - counter:
+            width: 8
