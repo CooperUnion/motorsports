@@ -1,0 +1,29 @@
+Import('env')
+
+flags_opt = AddOption('--pioflags',
+    dest='pioflags',
+    type='string',
+    action='store',
+    metavar='-e pch',
+    help='PlatformIO environment'
+)
+env['AddHelp']("fw --pioflags=FLAGS",
+               'Run pio for fw with FLAGS, e.g. `scons fw --pioflags="run -t pch"`')
+
+pioflags = GetOption('pioflags')
+command = None
+if pioflags is None:
+    command = 'pio run -d fw'
+else:
+    command = f'pio {pioflags} -d fw'
+
+[pio_builder] = env.Command(
+    env.Dir('.'),
+    [],
+    command
+)
+env.AlwaysBuild(pio_builder)
+env.Depends(pio_builder, env['PIP_PACKAGES'])
+
+env.Alias('fw', pio_builder)
+env['AddHelp']('fw', 'Build fw')
