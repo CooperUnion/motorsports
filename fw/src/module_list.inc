@@ -10,6 +10,7 @@
  * List an extern definition for each module's struct rate_tasks.
  */
 extern ember_rate_funcs_S can_rf;
+extern ember_rate_funcs_S test_rf;
 extern ember_rate_funcs_S eeprom_rf;
 
 /*
@@ -26,6 +27,7 @@ extern ember_rate_funcs_S module_rf;
  */
 ember_rate_funcs_S* ember_task_list[] = {
     &can_rf,
+    &test_rf,
     // TODO: boards crash without EEPROM
     // &eeprom_rf,
 };
