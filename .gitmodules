@@ -1,6 +1,6 @@
 [submodule "fw/ccmn_defs"]
 	path = fw/ccmn_defs
-	url = git@github.com:cooperunion/ccmn_defs.git
+	url = ../ccmn_defs.git
 [submodule "fw/lib/ember"]
 	path = fw/lib/ember
-	url = git@github.com:cooperunion/ember.git
+	url = ../ember.git
