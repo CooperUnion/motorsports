@@ -1,0 +1,8 @@
+{
+  "name": "fsae-shutdown",
+  "version": "rolling",
+  "description": "Shutdown ECU",
+  "build": {
+    "libLDFMode": "deep"
+  }
+}

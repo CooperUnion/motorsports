@@ -1,0 +1,8 @@
+{
+  "name": "fsae-dashboard",
+  "version": "rolling",
+  "description": "Dashboard ECU",
+  "build": {
+    "libLDFMode": "deep"
+  }
+}

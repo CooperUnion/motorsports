@@ -1,0 +1,8 @@
+{
+  "name": "fsae-precharge",
+  "version": "rolling",
+  "description": "Precharge ECU",
+  "build": {
+    "libLDFMode": "deep"
+  }
+}

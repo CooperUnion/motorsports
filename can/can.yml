@@ -7,3 +7,6 @@ nodes:
         signals:
         - counter:
             width: 8
+
+- SHUT:
+- DASH:
