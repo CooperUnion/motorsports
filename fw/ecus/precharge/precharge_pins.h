@@ -10,4 +10,6 @@
 #define PRECHARGE_ANALOG_PIN_ISOAMP_IN  6
 #define PRECHARGE_PIN_EXTRA_SCREW_TERM  7
 
+#define PRECHARGE_ADC_GAIN_ISOAMP_MV_TO_V (0.144f)
+
 // do what's right | made with <3 at Cooper Union

@@ -7,6 +7,10 @@ nodes:
         signals:
         - counter:
             width: 8
+        - dcBusVoltage:
+            width: 12
+            unit: volts
+            scale: 0.1
 
 - SHUT:
 - DASH:
