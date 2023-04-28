@@ -1,9 +1,12 @@
 nodes:
 - PCH:
+    rx:
+    - MOM_SystemCmd
     messages:
     - Status:
         cycletime: 20
         id: 0x40
+
         signals:
         - counter:
             width: 8
@@ -14,3 +17,14 @@ nodes:
 
 - SHUT:
 - DASH:
+- MOM:
+    messages:
+    - SystemCmd:
+        cycletime: 10
+        id: 0x10
+
+        signals:
+        - tractiveSystemRunlevel:
+            enumerated_values:
+            - ABSOLUTELY_NO_HV
+            - PLEASE_HV
