@@ -122,9 +122,7 @@ static void pch_init(void) {
         .mode = GPIO_MODE_OUTPUT,
     }));
 
-    gpio_set_level(PRECHARGE_PIN_AIR_NEG_CTRL, 0);
-    gpio_set_level(PRECHARGE_PIN_AIR_POS_CTRL, 0);
-    gpio_set_level(PRECHARGE_PIN_PRECH_RELAY_CTRL, 0);
+    open_all_contactors_without_delay_or_checks();
 
     // configure LEDs
     ESP_ERROR_CHECK(gpio_config(&(gpio_config_t){
