@@ -10,6 +10,16 @@ nodes:
         signals:
         - counter:
             width: 8
+        - state:
+            enumerated_values:
+            - INIT
+            - IDLE
+            - PRECHARGING
+            - CONNECTED
+            - DISCONNECTING
+            - FAULT
+        - calibratedAdcMv:
+            width: 12
         - dcBusVoltage:
             width: 12
             unit: volts
@@ -20,7 +30,7 @@ nodes:
 - MOM:
     messages:
     - SystemCmd:
-        cycletime: 10
+        cycletime: 30
         id: 0x10
 
         signals:
