@@ -17,8 +17,8 @@
 #include <esp_attr.h>
 #include <esp_timer.h>
 #include <driver/gpio.h>
-#include <FreeRTOS/FreeRTOS.h>
-#include <FreeRTOS/task.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include <hal/adc_types.h>
 
 #include <ember_taskglue.h>
