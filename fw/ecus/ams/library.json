@@ -1,0 +1,8 @@
+{
+  "name": "fsae-ams",
+  "version": "rolling",
+  "description": "Accummulator Managment System ECU",
+  "build": {
+    "libLDFMode": "deep"
+  }
+}

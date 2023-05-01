@@ -28,6 +28,7 @@ ember_rate_funcs_S* ember_task_list[] = {
     &can_rf,
     // TODO: boards crash without EEPROM
     // &eeprom_rf,
+    &module_rf,
 };
 
 const size_t ember_task_count = ARRAY_SIZE(ember_task_list);
