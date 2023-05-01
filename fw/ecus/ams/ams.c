@@ -22,6 +22,7 @@ ember_rate_funcs_S module_rf = {
     .call_1kHz = NULL,
 };
 
+static uint16_t device_number = 0;
 static void ams_init()
 {
     // SETUP AND PROGRAM THE BMS
@@ -32,18 +33,20 @@ static void ams_init()
     // gpio_set_level(GPIO_BLINK_LED, 1);
 
     bms_ic_init();
+
+    device_number = bms_ic_device_number();
+    bms_ic_config_reg12();
 }
 
 static void ams_1Hz()
 {
-    // esp_log_write(ESP_LOG_INFO, "AMS: ", "running at 1Hz!\n");
-    bms_ic_test();
-
-
     uint8_t blink_led = gpio_get_level(GPIO_BLINK_LED);
     blink_led = (blink_led) ? 0 : 1;
 
     gpio_set_level(GPIO_BLINK_LED, blink_led);
+
+    printf("Device Number: %x\n", device_number);
+
 }
 
 
