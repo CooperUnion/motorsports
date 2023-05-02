@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 // #include "esp_log.h"
 #include "driver/spi_master.h"
@@ -14,11 +15,120 @@
 #define AMS_PIN_SCLK 36
 #define AMS_PIN_CS   33
 
+#define SPI_RETRIES 4       // Number of retries for the spi transactions
+
+#define SPI_RW_BIT            7
+#define SET_BIT(num, index)   ((num) | (1U << (index)))
+#define CLEAR_BIT(num, index) ((num) & ~(1U << (index)))
+
 // Need:
 // subcommand read/write1/write2
 // direct command
 // read register
 // write register
+
+spi_device_handle_t spi;
+
+static uint8_t CRC8(uint8_t *data, uint8_t len);
+
+static uint8_t Checksum(uint8_t *ptr, uint8_t len);
+
+static void bms_ic_print_msg(spi_transaction_t msg, esp_err_t err);
+
+static void send_checksum(spi_transaction_t msg, uint8_t *checksum_buff, uint8_t length)
+{
+
+}
+
+// read subcommand
+// Write bytes of data starting at addr
+// each transaction only sends 1 byte of data
+static void spi_write(uint16_t addr, uint8_t *data, uint8_t w_bytes)
+{
+    uint8_t tx_buffer[4] = { 0 };
+    uint8_t rx_buffer[4] = { 0 };
+
+    spi_transaction_t msg = {
+        .length = 24,
+        .tx_buffer = tx_buffer,
+        .rx_buffer = rx_buffer,
+    };
+
+    // send data over spi
+    for (size_t i = 0; i < w_bytes; i++)
+    {
+        tx_buffer[0] = (addr + i) | 0x80;
+        tx_buffer[1] = data[i];
+        tx_buffer[2] = CRC8(tx_buffer, 2);
+
+        // send message
+        esp_err_t err;
+        err = spi_device_polling_transmit(spi, &msg);
+        bms_ic_print_msg(msg, err);
+        vTaskDelay(1);
+
+        bool message_reflected = false;
+        // Resend message until message is reflected on MISO
+        for (size_t j = 0; (j < SPI_RETRIES) && !message_reflected;  j++)
+        {
+            if (!memcmp(tx_buffer, rx_buffer, (msg.length / 8)))
+            {
+                err = spi_device_polling_transmit(spi, &msg);
+                // bms_ic_print_msg(msg, err);
+                vTaskDelay(1);
+            }
+            else
+            {
+                message_reflected = true;
+            }
+        }
+    }
+}
+
+static void spi_read(uint16_t addr, uint8_t *rx_data, uint8_t r_bytes)
+{
+    uint8_t tx_buffer[4] = { 0 };
+    uint8_t rx_buffer[4] = { 0 };
+
+    spi_transaction_t msg = {
+        .length = 24,
+        .tx_buffer = tx_buffer,
+        .rx_buffer = rx_buffer,
+    };
+
+    // Read date from spi
+    for (size_t i = 0; i < r_bytes; i++)
+    {
+        tx_buffer[0] = (addr + i);
+        tx_buffer[1] = 0xFF;
+        tx_buffer[2] = CRC8(tx_buffer, 2);
+
+        // send message
+        esp_err_t err;
+        err = spi_device_polling_transmit(spi, &msg);
+        bms_ic_print_msg(msg, err);
+        vTaskDelay(1);
+
+        bool message_reflected = false;
+        // Resend message until message is reflected on MISO
+        for (size_t j = 0; (j < SPI_RETRIES) && !message_reflected;  j++)
+        {
+            // Since byte is being read, the data byte doesn't matter
+            if (tx_buffer[0] != rx_buffer[0])
+            {
+                err = spi_device_polling_transmit(spi, &msg);
+                printf("spi_read\n");
+                bms_ic_print_msg(msg, err);
+                vTaskDelay(1);
+            }
+            else
+            {
+                message_reflected = true;
+                rx_data[i] = rx_buffer[1];
+            }
+        }
+    }
+}
 
 static uint8_t CRC8(uint8_t *data, uint8_t len)
 //Calculates CRC8 for passed bytes. Used in i2c read and write functions
@@ -69,26 +179,25 @@ static void spi_precallback()
     // printf("SPI PRECALLBACK\n");
 }
 
-spi_device_handle_t spi;
-uint8_t rx_buffer[4] = { 0 };
-uint8_t tx_buffer[10] = { 0 };
-
-static void bms_ic_print_msg(spi_transaction_t msg, uint8_t *TX_Buffer, esp_err_t err)
+static void bms_ic_print_msg(spi_transaction_t msg, esp_err_t err)
 {
+    uint8_t *tx_buffer = (uint8_t *)msg.tx_buffer;
+    uint8_t *rx_buffer = (uint8_t *)msg.rx_buffer;
+
     if (err == ESP_OK)
     {
-        printf("Successul transaction\n");
+        printf("Transaction\n");
         printf("\ttx: ");
         for (int i = 0; i < (msg.length / 8); i++)
         {
-            printf("%x ", TX_Buffer[i]);
+            printf("%x ", tx_buffer[i]);
         }
         putchar('\n');
 
         printf("\trx: ");
         for (int i = 0; i < (msg.length / 8); i++)
         {
-            printf("%x ", msg.rx_data[i]);
+            printf("%x ", rx_buffer[i]);
         }
         putchar('\n');
 
@@ -113,7 +222,6 @@ void bms_ic_init()
         .max_transfer_sz = 4096,
 
         // .flags = SPICOMMON_BUSFLAG_MASTER,
-
         // plus a lot of other data members
         // Setup interrrupts later
         // .isr_cpu_id = ,
@@ -132,80 +240,32 @@ void bms_ic_init()
     };
 
     spi_bus_add_device(SPI2_HOST, &spi_device, &spi);
-
-    char str[4] = "Hey";
-    memcpy(rx_buffer, str, sizeof(str));
-
 }
 
 // Reg1: 5V (for LED)
 // the preregulator (referred to as reg0) needs to be configured as well as reg1/2_EN
-void bms_ic_config_reg12()
+void bms_ic_config_reg0()
 {
     // reg0 enable
-	uint8_t TX_Buffer[4] = { 0 };
+    uint8_t tx_buffer[4] = { 0 };
+    uint8_t rx_buffer[4] = { 0 };
 
     spi_transaction_t msg = {
         .length = 24, // 16
-        .tx_buffer = TX_Buffer,
-        .flags = (/* SPI_TRANS_USE_TXDATA | */ SPI_TRANS_USE_RXDATA),
+        .tx_buffer = tx_buffer,
+        .rx_buffer = rx_buffer,
     };
     esp_err_t err;
 
     // SET REGISTER
-
-    // First two write set the register address to write to:
-    // -------------------------------------------------------
-    TX_Buffer[0] = (0x3E | 0x80);
-    TX_Buffer[1] = (REG0Config & 0x00FF);
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // -------------------------------------------------------
-
-    TX_Buffer[0] = (0x3F | 0x80);
-    TX_Buffer[1] = (REG0Config & 0xFF00) >> 8; // second byte
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // -------------------------------------------------------
-    // write the data
     uint8_t reg0_config_reg = 0x01;
 
-    TX_Buffer[0] = (0x40 | 0x80);
-    TX_Buffer[1] = reg0_config_reg;
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
+    uint8_t tx_data[4] = { 0 };
+    tx_data[0] = REG0Config & 0x00FF;
+    tx_data[1] = (REG0Config & 0xFF00) >> 8;
+    tx_data[2] = reg0_config_reg;
 
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
+    spi_write(0x3E, tx_data, 3);
 
     // -------------------------------------------------------
     // checksum includes: register address in little endian, and the buffer data (also in little endian form)
@@ -214,138 +274,45 @@ void bms_ic_config_reg12()
     checksum_buff[1] = (REG0Config & 0xFF00) >> 8;
     checksum_buff[2] = reg0_config_reg; // the data
 
-    // write the checksum to 0x60
-    TX_Buffer[0] = (0x60 | 0x80);
-    TX_Buffer[1] = Checksum(checksum_buff, 3);
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
+    tx_data[0] = Checksum(checksum_buff, 3);
+    tx_data[1] = 0x05;
+    spi_write(0x60, tx_data, 2);
+}
 
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // -------------------------------------------------------
-    // write the combined legnth of everything to 0x61
-    //  length includes data in 0x3E 0x3F, data written, and 0x60 0x61
-    TX_Buffer[0] = (0x61 | 0x80);
-    TX_Buffer[1] = 0x05;
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // ------------------------------------------------------------------------------
-    // Subcommand to set Reg1 to 5V (only need to write)
-
+void bms_ic_config_reg12()
+{
     // REG12_CONTROL
     // // 0x7 for 5V
 
-    TX_Buffer[0] = (0x3E | 0x80);
-    TX_Buffer[1] = (REG12_CONTROL & 0x00FF);
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
+    uint8_t tx_buffer[4] = { 0 };
+    uint8_t rx_buffer[4] = { 0 };
 
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
+    spi_transaction_t msg = {
+        .length = 24, // 16
+        .tx_buffer = tx_buffer,
+        .rx_buffer = rx_buffer,
+        // .flags = (/* SPI_TRANS_USE_TXDATA | */ SPI_TRANS_USE_RXDATA),
+    };
+    esp_err_t err;
 
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // -------------------------------------------------------
-
-    TX_Buffer[0] = (0x3F | 0x80);
-    TX_Buffer[1] = (REG12_CONTROL & 0xFF00) >> 8; // second byte
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // -------------------------------------------------------
-    // -------------------------------------------------------
-
-    // write the data
+    // SET REGISTER
     uint8_t reg12_config_reg = 0b00001111;
 
-    TX_Buffer[0] = (0x40 | 0x80);
-    TX_Buffer[1] = reg12_config_reg; // REVIEW THIS !!!!!!
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
+    uint8_t tx_data[4] = { 0 };
+    tx_data[0] = REG12_CONTROL & 0x00FF;
+    tx_data[1] = (REG12_CONTROL & 0xFF00) >> 8;
+    tx_data[2] = reg12_config_reg;
 
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
+    spi_write(0x3E, tx_data, 3);
 
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // -------------------------------------------------------
-    // checksum includes: register address in little endian, and the buffer data (also in little endian form)
+    uint8_t checksum_buff[3] = { 0 };
     checksum_buff[0] = REG12_CONTROL & 0x00FF;
     checksum_buff[1] = (REG12_CONTROL & 0xFF00) >> 8;
     checksum_buff[2] = reg12_config_reg; // the data
 
-    // write the checksum to 0x60
-    TX_Buffer[0] = (0x60 | 0x80);
-    TX_Buffer[1] = Checksum(checksum_buff, 3);
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // -------------------------------------------------------
-    // write the combined legnth of everything to 0x61
-    //  length includes data in 0x3E 0x3F, data written, and 0x60 0x61
-    TX_Buffer[0] = (0x61 | 0x80);
-    TX_Buffer[1] = 0x05;
-    TX_Buffer[2] = CRC8(TX_Buffer, 2);
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
-
-    // Repeat command to get the reflected message
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-    vTaskDelay(2);
+    tx_data[0] = Checksum(checksum_buff, 3);
+    tx_data[1] = 0x05;
+    spi_write(0x60, tx_data, 2);
 }
 
 uint16_t bms_ic_device_number()
@@ -364,122 +331,17 @@ uint16_t bms_ic_device_number()
     // the polynomial is x^8 + x^2 + x + 1 (0x07)
     // crc calculation (crc is required to send or else MISO will output 0xFFFFAA!!!)
 
-    // Read Device Number
-    // uint8_t TX_Reg[4] = {0x00, 0x00, 0x00, 0x00};
-	uint8_t TX_Buffer[4] = {0x00, 0x00};
+    uint8_t tx_data[4] = { 0 };
+    tx_data[0] = DEVICE_NUMBER & 0x00FF;
+    tx_data[1] = (DEVICE_NUMBER & 0xFF00) >> 8;
 
-    // uint16_t command = DEVICE_NUMBER;
-	//TX_Reg in little endian format
-	// TX_Reg[0] = command & 0xff;
-	// TX_Reg[1] = (command >> 8) & 0xff;
+    spi_write(0x3E, tx_data, 2);
 
-    //
-    // SPI_WriteReg(0x3E,TX_Reg,2);
-    //
-    // uint8_t addr = 0x80 | 0x3E;
-    // // uint8_t rxdata [2];
-    // uint32_t match = 0;
-    // uint32_t retries = 10;
-
-    printf("\nNew transaction\n");
-
-    spi_transaction_t msg = {
-        .length = 24, // 16
-        .tx_buffer = TX_Buffer,
-        .flags = (/* SPI_TRANS_USE_TXDATA | */ SPI_TRANS_USE_RXDATA),
-    };
-
-    esp_err_t err;
-
-    // spi_device_polling_transmit(spi, &msg);
-
-
-    do
-    {
-        TX_Buffer[0] = 0xBE;
-        TX_Buffer[1] = 0x01;
-        TX_Buffer[2] = CRC8(TX_Buffer, 2); // 0x9E
-
-        memset(msg.rx_data, 0, 4);
-        esp_err_t err = spi_device_polling_transmit(spi, &msg);
-        vTaskDelay(2);
-
-        bms_ic_print_msg(msg, TX_Buffer, err);
-    } while (!memcmp(TX_Buffer, msg.rx_data, msg.length / 8));
-
-    memset(msg.rx_data, 0, 4);
-    printf("ARRAYS ARE THE SAME!!\n");
-
-    do
-    {
-        TX_Buffer[0] = 0xBF;
-        TX_Buffer[1] = 0x00;
-        TX_Buffer[2] = CRC8(TX_Buffer, 2); // 0x8C
-
-        memset(msg.rx_data, 0, 4);
-        esp_err_t err = spi_device_polling_transmit(spi, &msg);
-        vTaskDelay(2);
-
-        bms_ic_print_msg(msg, TX_Buffer, err);
-
-    }    while (!memcmp(TX_Buffer, msg.rx_data, msg.length / 8));
-
-    printf("ARRAYS ARE THE SAME!!\n");
-
-    // do the second half
-
-    TX_Buffer[0] = 0x40;
-    TX_Buffer[1] = 0xFF;
-    TX_Buffer[2] = CRC8(TX_Buffer, 2); // 0xA8
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-
-    vTaskDelay(2);
-
+    uint8_t rx_data[4] = { 0 };
+    spi_read(0x40, rx_data, 2);
 
     uint16_t device_number = 0;
-
-    // repeat previous commmand
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    if (msg.rx_data[0] == TX_Buffer[0])
-    {
-        bms_ic_print_msg(msg, TX_Buffer, err);
-        device_number = msg.rx_data[1];
-    }
-    else
-    {
-        printf("Error %x not repeated\n", TX_Buffer[0]);
-    }
-
-    vTaskDelay(2);
-
-
-    printf("Device Number: %x\n", device_number);
-
-    // ---------
-
-    TX_Buffer[0] = 0x41;
-    TX_Buffer[1] = 0xFF;
-    TX_Buffer[2] = CRC8(TX_Buffer, 2); // 0xBD
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    bms_ic_print_msg(msg, TX_Buffer, err);
-
-    memset(msg.rx_data, 0, 4);
-    err = spi_device_polling_transmit(spi, &msg);
-    if (msg.rx_data[0] == TX_Buffer[0])
-    {
-        bms_ic_print_msg(msg, TX_Buffer, err);
-        device_number += (msg.rx_data[1] << 8);
-    }
-    else
-    {
-        printf("Error %x not repeated\n", TX_Buffer[0]);
-    }
+    device_number = (rx_data[0] + (rx_data[1] << 8));
 
     return device_number;
 }

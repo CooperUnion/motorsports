@@ -34,8 +34,6 @@ static void ams_init()
 
     bms_ic_init();
 
-    device_number = bms_ic_device_number();
-    bms_ic_config_reg12();
 }
 
 static void ams_1Hz()
@@ -45,8 +43,11 @@ static void ams_1Hz()
 
     gpio_set_level(GPIO_BLINK_LED, blink_led);
 
-    printf("Device Number: %x\n", device_number);
+    bms_ic_config_reg0();
+    bms_ic_config_reg12();
+    device_number = bms_ic_device_number();
 
+    printf("Device Number: %x\n", device_number);
 }
 
 
