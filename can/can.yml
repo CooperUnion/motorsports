@@ -1,80 +1,4 @@
-message_templates:
-  - CellVoltages1_4:
-      cycletime: 10
-      signals:
-      - cell1:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell2:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell3:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell4:
-          width: 16
-          scale: 0.001
-          unit: V
-  - CellVoltages5_8:
-      cycletime: 10
-      signals:
-      - cell5:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell6:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell7:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell8:
-          width: 16
-          scale: 0.001
-          unit: V
-  - CellVoltages9_12:
-      cycletime: 10
-      signals:
-      - cell9:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell10:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell11:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell12:
-          width: 16
-          scale: 0.001
-          unit: V
-  - CellVoltages13_16:
-      cycletime: 10
-      signals:
-      - cell13:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell14:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell15:
-          width: 16
-          scale: 0.001
-          unit: V
-      - cell16:
-          width: 16
-          scale: 0.001
-          unit: V
+bitrate: 500000
 
 nodes:
 - PCH:
@@ -90,20 +14,168 @@ nodes:
 - DASH:
 
 - AMS:
+    rx: "*"
     messages:
-    - BMB0_CellVoltages1_4:
-        cycletime: 10
-        id: 0x50
-        from_template: CellVoltages1_4
-    - BMB0_CellVoltages5_8:
-        cycletime: 10
-        id: 0x51
-        from_template: CellVoltages5_8
-    - BMB0_CellVoltages9_12:
-        cycletime: 10
-        id: 0x52
-        from_template: CellVoltages9_12
-    - BMB0_CellVoltages13_16:
-        cycletime: 10
-        id: 0x53
-        from_template: CellVoltages13_16
+    - Bmb0_CellVoltages1_4:
+        id: 0x63
+        cycletime: 100
+        signals:
+        - bmb0_cell1: &bmbcell
+            width: 16
+            scale: 0.001
+            unit: V
+        - bmb0_cell2: *bmbcell
+        - bmb0_cell3: *bmbcell
+        - bmb0_cell4: *bmbcell
+    - Bmb0_CellVoltages5_8:
+        id: 0x64
+        cycletime: 100
+        signals:
+        - bmb0_cell5: *bmbcell
+        - bmb0_cell6: *bmbcell
+        - bmb0_cell7: *bmbcell
+        - bmb0_cell8: *bmbcell
+    - Bmb0_CellVoltages9_12:
+        id: 0x65
+        cycletime: 100
+        signals:
+        - bmb0_cell9: *bmbcell
+        - bmb0_cell10: *bmbcell
+        - bmb0_cell11: *bmbcell
+        - bmb0_cell12: *bmbcell
+    - Bmb0_CellVoltages13_16:
+        id: 0x66
+        cycletime: 100
+        signals:
+        - bmb0_cell13: *bmbcell
+        - bmb0_cell14: *bmbcell
+        - bmb0_cell15: *bmbcell
+        - bmb0_cell16: *bmbcell
+    - Bmb1_CellVoltages1_4:
+        id: 0x67
+        cycletime: 100
+        signals:
+        - bmb1_cell1: *bmbcell
+        - bmb1_cell2: *bmbcell
+        - bmb1_cell3: *bmbcell
+        - bmb1_cell4: *bmbcell
+    - Bmb1_CellVoltages5_8:
+        id: 0x68
+        cycletime: 100
+        signals:
+        - bmb1_cell5: *bmbcell
+        - bmb1_cell6: *bmbcell
+        - bmb1_cell7: *bmbcell
+        - bmb1_cell8: *bmbcell
+    - Bmb1_CellVoltages9_12:
+        id: 0x69
+        cycletime: 100
+        signals:
+        - bmb1_cell9: *bmbcell
+        - bmb1_cell10: *bmbcell
+        - bmb1_cell11: *bmbcell
+        - bmb1_cell12: *bmbcell
+    - Bmb1_CellVoltages13_16:
+        id: 0x6A
+        cycletime: 100
+        signals:
+        - bmb1_cell13: *bmbcell
+        - bmb1_cell14: *bmbcell
+        - bmb1_cell15: *bmbcell
+        - bmb1_cell16: *bmbcell
+    - Bmb2_CellVoltages1_4:
+        id: 0x6B
+        cycletime: 100
+        signals:
+        - bmb2_cell1: *bmbcell
+        - bmb2_cell2: *bmbcell
+        - bmb2_cell3: *bmbcell
+        - bmb2_cell4: *bmbcell
+    - Bmb2_CellVoltages5_8:
+        id: 0x6C
+        cycletime: 100
+        signals:
+        - bmb2_cell5: *bmbcell
+        - bmb2_cell6: *bmbcell
+        - bmb2_cell7: *bmbcell
+        - bmb2_cell8: *bmbcell
+    - Bmb2_CellVoltages9_12:
+        id: 0x6D
+        cycletime: 100
+        signals:
+        - bmb2_cell9: *bmbcell
+        - bmb2_cell10: *bmbcell
+        - bmb2_cell11: *bmbcell
+        - bmb2_cell12: *bmbcell
+    - Bmb2_CellVoltages13_16:
+        id: 0x6E
+        cycletime: 100
+        signals:
+        - bmb2_cell13: *bmbcell
+        - bmb2_cell14: *bmbcell
+        - bmb2_cell15: *bmbcell
+        - bmb2_cell16: *bmbcell
+    - Bmb3_CellVoltages1_4:
+        id: 0x6F
+        cycletime: 100
+        signals:
+        - bmb3_cell1: *bmbcell
+        - bmb3_cell2: *bmbcell
+        - bmb3_cell3: *bmbcell
+        - bmb3_cell4: *bmbcell
+    - Bmb3_CellVoltages5_8:
+        id: 0x70
+        cycletime: 100
+        signals:
+        - bmb3_cell5: *bmbcell
+        - bmb3_cell6: *bmbcell
+        - bmb3_cell7: *bmbcell
+        - bmb3_cell8: *bmbcell
+    - Bmb3_CellVoltages9_12:
+        id: 0x71
+        cycletime: 100
+        signals:
+        - bmb3_cell9: *bmbcell
+        - bmb3_cell10: *bmbcell
+        - bmb3_cell11: *bmbcell
+        - bmb3_cell12: *bmbcell
+    - Bmb3_CellVoltages13_16:
+        id: 0x72
+        cycletime: 100
+        signals:
+        - bmb3_cell13: *bmbcell
+        - bmb3_cell14: *bmbcell
+        - bmb3_cell15: *bmbcell
+        - bmb3_cell16: *bmbcell
+    - Bmb4_CellVoltages1_4:
+        id: 0x73
+        cycletime: 100
+        signals:
+        - bmb4_cell1: *bmbcell
+        - bmb4_cell2: *bmbcell
+        - bmb4_cell3: *bmbcell
+        - bmb4_cell4: *bmbcell
+    - Bmb4_CellVoltages5_8:
+        id: 0x74
+        cycletime: 100
+        signals:
+        - bmb4_cell5: *bmbcell
+        - bmb4_cell6: *bmbcell
+        - bmb4_cell7: *bmbcell
+        - bmb4_cell8: *bmbcell
+    - Bmb4_CellVoltages9_12:
+        id: 0x75
+        cycletime: 100
+        signals:
+        - bmb4_cell9: *bmbcell
+        - bmb4_cell10: *bmbcell
+        - bmb4_cell11: *bmbcell
+        - bmb4_cell12: *bmbcell
+    - Bmb4_CellVoltages13_16:
+        id: 0x76
+        cycletime: 100
+        signals:
+        - bmb4_cell13: *bmbcell
+        - bmb4_cell14: *bmbcell
+        - bmb4_cell15: *bmbcell
+        - bmb4_cell16: *bmbcell

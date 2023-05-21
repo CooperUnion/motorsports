@@ -2,31 +2,50 @@
 
 #include "opencan_tx.h"
 
-void CANTX_populateTemplate_BMB0_CellVoltages1_4(struct CAN_TMessage_CellVoltages1_4 * const m) {
-    m->cell1 = bmbs[BMB_0].status.cell_voltages[0];
-    m->cell2 = bmbs[BMB_0].status.cell_voltages[1];
-    m->cell3 = bmbs[BMB_0].status.cell_voltages[2];
-    m->cell4 = bmbs[BMB_0].status.cell_voltages[3];
-    printf("cell1: %f\n", m->cell1);
-}
+#define CANTX_CELLVOLTAGES_1_4(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_CellVoltages1_4( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_CellVoltages1_4 * const m) {  \
+        m->AMS_bmb##BMB_NUM##_cell1 = bmbs[BMB_##BMB_NUM].status.cell_voltages[0]; \
+        m->AMS_bmb##BMB_NUM##_cell2 = bmbs[BMB_##BMB_NUM].status.cell_voltages[1]; \
+        m->AMS_bmb##BMB_NUM##_cell3 = bmbs[BMB_##BMB_NUM].status.cell_voltages[2]; \
+        m->AMS_bmb##BMB_NUM##_cell4 = bmbs[BMB_##BMB_NUM].status.cell_voltages[3]; \
+    }
 
-void CANTX_populateTemplate_BMB0_CellVoltages5_8(struct CAN_TMessage_CellVoltages5_8 * const m) {
-    m->cell5 = bmbs[BMB_0].status.cell_voltages[4];
-    m->cell6 = bmbs[BMB_0].status.cell_voltages[5];
-    m->cell7 = bmbs[BMB_0].status.cell_voltages[6];
-    m->cell8 = bmbs[BMB_0].status.cell_voltages[7];
-}
+#define CANTX_CELLVOLTAGES_5_8(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_CellVoltages5_8( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_CellVoltages5_8 * const m) {  \
+        m->AMS_bmb##BMB_NUM##_cell5 = bmbs[BMB_##BMB_NUM].status.cell_voltages[4]; \
+        m->AMS_bmb##BMB_NUM##_cell6 = bmbs[BMB_##BMB_NUM].status.cell_voltages[5]; \
+        m->AMS_bmb##BMB_NUM##_cell7 = bmbs[BMB_##BMB_NUM].status.cell_voltages[6]; \
+        m->AMS_bmb##BMB_NUM##_cell8 = bmbs[BMB_##BMB_NUM].status.cell_voltages[7]; \
+    }
 
-void CANTX_populateTemplate_BMB0_CellVoltages9_12(struct CAN_TMessage_CellVoltages9_12 * const m) {
-    m->cell9 = bmbs[BMB_0].status.cell_voltages[8];
-    m->cell10 = bmbs[BMB_0].status.cell_voltages[9];
-    m->cell11 = bmbs[BMB_0].status.cell_voltages[10];
-    m->cell12 = bmbs[BMB_0].status.cell_voltages[11];
-}
+#define CANTX_CELLVOLTAGES_9_12(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_CellVoltages9_12( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_CellVoltages9_12 * const m) {  \
+        m->AMS_bmb##BMB_NUM##_cell9 = bmbs[BMB_##BMB_NUM].status.cell_voltages[8]; \
+        m->AMS_bmb##BMB_NUM##_cell10 = bmbs[BMB_##BMB_NUM].status.cell_voltages[9]; \
+        m->AMS_bmb##BMB_NUM##_cell11 = bmbs[BMB_##BMB_NUM].status.cell_voltages[10]; \
+        m->AMS_bmb##BMB_NUM##_cell12 = bmbs[BMB_##BMB_NUM].status.cell_voltages[11]; \
+    }
 
-void CANTX_populateTemplate_BMB0_CellVoltages13_16(struct CAN_TMessage_CellVoltages13_16 * const m) {
-    m->cell13 = bmbs[BMB_0].status.cell_voltages[12];
-    m->cell14 = bmbs[BMB_0].status.cell_voltages[13];
-    m->cell15 = bmbs[BMB_0].status.cell_voltages[14];
-    m->cell16 = bmbs[BMB_0].status.cell_voltages[15];
-}
+#define CANTX_CELLVOLTAGES_13_16(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_CellVoltages13_16( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_CellVoltages13_16 * const m) {  \
+        m->AMS_bmb##BMB_NUM##_cell13 = bmbs[BMB_##BMB_NUM].status.cell_voltages[12]; \
+        m->AMS_bmb##BMB_NUM##_cell14 = bmbs[BMB_##BMB_NUM].status.cell_voltages[13]; \
+        m->AMS_bmb##BMB_NUM##_cell15 = bmbs[BMB_##BMB_NUM].status.cell_voltages[14]; \
+        m->AMS_bmb##BMB_NUM##_cell16 = bmbs[BMB_##BMB_NUM].status.cell_voltages[15]; \
+    }
+
+#define FOREACH_BMB(action) \
+    action(0) \
+    action(1) \
+    action(2) \
+    action(3) \
+    action(4)
+
+FOREACH_BMB(CANTX_CELLVOLTAGES_1_4)
+FOREACH_BMB(CANTX_CELLVOLTAGES_5_8)
+FOREACH_BMB(CANTX_CELLVOLTAGES_9_12)
+FOREACH_BMB(CANTX_CELLVOLTAGES_13_16)
