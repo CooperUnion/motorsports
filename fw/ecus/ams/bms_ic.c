@@ -10,6 +10,7 @@
 
 #include "bms_ic.h"
 #include "bq769x2.h"
+#include "interface.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -245,29 +246,29 @@ void bms_ic_init()
 
     spi_bus_add_device(SPI2_HOST, &spi_device, &spi);
 
-    // Configure I2C
+    // // Configure I2C
 
-    i2c_config_t conf = {
-        .mode             = I2C_MODE_MASTER,
-        .sda_io_num       = AMS_PIN_SDA,
-        .scl_io_num       = AMS_PIN_SCL,
-        .sda_pullup_en    = GPIO_PULLUP_DISABLE,
-        .scl_pullup_en    = GPIO_PULLUP_DISABLE,
-        .master.clk_speed = 1000, // 50kHz
-    };
+    // i2c_config_t conf = {
+    //     .mode             = I2C_MODE_MASTER,
+    //     .sda_io_num       = AMS_PIN_SDA,
+    //     .scl_io_num       = AMS_PIN_SCL,
+    //     .sda_pullup_en    = GPIO_PULLUP_DISABLE,
+    //     .scl_pullup_en    = GPIO_PULLUP_DISABLE,
+    //     .master.clk_speed = 1000, // 50kHz
+    // };
 
 
-    ESP_ERROR_CHECK(i2c_param_config(BMS_IC_I2C_HOST, &conf));
+    // ESP_ERROR_CHECK(i2c_param_config(BMS_IC_I2C_HOST, &conf));
 
-    uint32_t interrupt_flags = 0;
+    // uint32_t interrupt_flags = 0;
 
-    i2c_driver_install(
-        BMS_IC_I2C_HOST,
-        I2C_MODE_MASTER,
-        0, // slv_rx/tx buffer length is ignored in master mode
-        0, // slv_rx/tx buffer length is ignored in master mode
-        interrupt_flags
-    );
+    // i2c_driver_install(
+    //     BMS_IC_I2C_HOST,
+    //     I2C_MODE_MASTER,
+    //     0, // slv_rx/tx buffer length is ignored in master mode
+    //     0, // slv_rx/tx buffer length is ignored in master mode
+    //     interrupt_flags
+    // );
     // ESP_ERROR_CHECK(i2c_set_timeout(BMS_IC_I2C_HOST, 50000));
 }
 
@@ -390,6 +391,9 @@ void bms_ic_swap_to_i2c()
     tx_data[1] = (SWAP_TO_I2C & 0xFF00) >> 8;
 
     spi_write(0x3E, tx_data, 2);
+
+    vTaskDelay(pdMS_TO_TICKS(100));
+    bq769x2_init();
 }
 
 
@@ -407,103 +411,91 @@ void bms_ic_swap_to_i2c()
 //     i2c_cmd_link_delete(cmd_handle);
 // }
 
-static void i2c_write(uint16_t addr, uint8_t *data, uint8_t length)
-{
-    // uint8_t tx_data[4] = { 0 };
+// static void i2c_write(uint16_t addr, uint8_t *data, uint8_t length)
+// {
+//     // uint8_t tx_data[4] = { 0 };
 
-    i2c_cmd_handle_t cmd_handle = i2c_cmd_link_create();
-    ESP_ERROR_CHECK(i2c_master_start(cmd_handle));
-    ESP_ERROR_CHECK(i2c_master_write_byte(cmd_handle, addr, false));
+//     i2c_cmd_handle_t cmd_handle = i2c_cmd_link_create();
+//     ESP_ERROR_CHECK(i2c_master_start(cmd_handle));
+//     ESP_ERROR_CHECK(i2c_master_write_byte(cmd_handle, addr, false));
 
-    ESP_ERROR_CHECK(i2c_master_write(cmd_handle, data, length, true));
-    ESP_ERROR_CHECK(i2c_master_stop(cmd_handle));
+//     ESP_ERROR_CHECK(i2c_master_write(cmd_handle, data, length, true));
+//     ESP_ERROR_CHECK(i2c_master_stop(cmd_handle));
 
-    const uint32_t timeout_ticks = 10000;
-    ESP_ERROR_CHECK(i2c_master_cmd_begin(BMS_IC_I2C_HOST, cmd_handle, timeout_ticks));
-    i2c_cmd_link_delete(cmd_handle);
+//     const uint32_t timeout_ticks = 10000;
+//     ESP_ERROR_CHECK(i2c_master_cmd_begin(BMS_IC_I2C_HOST, cmd_handle, timeout_ticks));
+//     i2c_cmd_link_delete(cmd_handle);
 
-    printf("i2c tx: ");
-    printf("%x ", addr);
-    for (int i = 0; i < length; i++)
-    {
-        printf("%x ", data[i]);
-    }
-    putchar('\n');
-}
+//     printf("i2c tx: ");
+//     printf("%x ", addr);
+//     for (int i = 0; i < length; i++)
+//     {
+//         printf("%x ", data[i]);
+//     }
+//     putchar('\n');
+// }
 
-static void i2c_read(uint16_t addr, uint8_t *rx_buff, uint8_t length)
-{
-    (void)addr;
-    // uint8_t tx_data[4];
+// static void i2c_read(uint16_t addr, uint8_t *rx_buff, uint8_t length)
+// {
+//     (void)addr;
+//     // uint8_t tx_data[4];
 
-    i2c_cmd_handle_t cmd_handle = i2c_cmd_link_create();
-    ESP_ERROR_CHECK(i2c_master_start(cmd_handle));
-    ESP_ERROR_CHECK(i2c_master_write_byte(cmd_handle, (0x10), false));
-    ESP_ERROR_CHECK(i2c_master_write_byte(cmd_handle, 0x40, true));
-    ESP_ERROR_CHECK(i2c_master_write_byte(cmd_handle, (0x11), false));
-    ESP_ERROR_CHECK(i2c_master_read(cmd_handle, rx_buff, 3, I2C_MASTER_ACK));
-    ESP_ERROR_CHECK(i2c_master_stop(cmd_handle));
+//     i2c_cmd_handle_t cmd_handle = i2c_cmd_link_create();
+//     ESP_ERROR_CHECK(i2c_master_start(cmd_handle));
+//     ESP_ERROR_CHECK(i2c_master_write_byte(cmd_handle, (0x10), false));
+//     ESP_ERROR_CHECK(i2c_master_write_byte(cmd_handle, 0x40, true));
+//     ESP_ERROR_CHECK(i2c_master_write_byte(cmd_handle, (0x11), false));
+//     ESP_ERROR_CHECK(i2c_master_read(cmd_handle, rx_buff, 3, I2C_MASTER_ACK));
+//     ESP_ERROR_CHECK(i2c_master_stop(cmd_handle));
 
-    // uint8_t crc_data[4] = { 0x10, 0x40, 0x11, 0x00};
+//     // uint8_t crc_data[4] = { 0x10, 0x40, 0x11, 0x00};
 
-    // uint8_t data[4] = { 0 };
-    // data[0] = 0x40;
-    // data[1] = (0x10 | I2C_MASTER_READ);
-    // data[2] = CRC8(crc_data, 3);
-    // i2c_master_write(cmd_handle, data, 3, true);
-
-
-    // i2c_master_read(cmd_handle, rx_buff, length, I2C_MASTER_ACK);
-    // i2c_master_stop(cmd_handle);
+//     // uint8_t data[4] = { 0 };
+//     // data[0] = 0x40;
+//     // data[1] = (0x10 | I2C_MASTER_READ);
+//     // data[2] = CRC8(crc_data, 3);
+//     // i2c_master_write(cmd_handle, data, 3, true);
 
 
-    const uint8_t timeout_ticks = 100;
+//     // i2c_master_read(cmd_handle, rx_buff, length, I2C_MASTER_ACK);
+//     // i2c_master_stop(cmd_handle);
 
-    ESP_ERROR_CHECK(i2c_master_cmd_begin(BMS_IC_I2C_HOST, cmd_handle, timeout_ticks));
 
-    // for (int i = 0; i < 2 && (rx_buff[0] == 0xFF); i++)
-    // {
-    //     ESP_ERROR_CHECK(i2c_master_cmd_begin(BMS_IC_I2C_HOST, cmd_handle, timeout_ticks));
-    //     vTaskDelay(2);
+//     const uint8_t timeout_ticks = 100;
 
-    //     printf("i2c rx: ");
-    //     for (int i = 0; i < sizeof(rx_buff); i++)
-    //     {
-    //         printf("%x ", rx_buff[i]);
-    //     }
-    //     putchar('\n');
-    // }
+//     ESP_ERROR_CHECK(i2c_master_cmd_begin(BMS_IC_I2C_HOST, cmd_handle, timeout_ticks));
 
-    i2c_cmd_link_delete(cmd_handle);
-}
+//     // for (int i = 0; i < 2 && (rx_buff[0] == 0xFF); i++)
+//     // {
+//     //     ESP_ERROR_CHECK(i2c_master_cmd_begin(BMS_IC_I2C_HOST, cmd_handle, timeout_ticks));
+//     //     vTaskDelay(2);
 
+//     //     printf("i2c rx: ");
+//     //     for (int i = 0; i < sizeof(rx_buff); i++)
+//     //     {
+//     //         printf("%x ", rx_buff[i]);
+//     //     }
+//     //     putchar('\n');
+//     // }
+
+//     i2c_cmd_link_delete(cmd_handle);
+// }
+
+#include "interface.h"
+#include "registers.h"
+#include "helper.h"
 
 uint16_t bms_ic_i2c_device_number()
 {
-    uint8_t tx_data[4] = { 0 };
-    tx_data[0] = 0x3E;
-    tx_data[1] = DEVICE_NUMBER & 0x00FF;
-    tx_data[2] = (DEVICE_NUMBER & 0xFF00) >> 8;
-    tx_data[3] = CRC8(tx_data, 3);
+    uint16_t device_number;
+    int err = bq769x2_subcmd_read_u2(BQ769X2_SUBCMD_DEVICE_NUMBER, &device_number);
+    if (err) {
+        LOG_ERR("failed to read device number: %d", err);
+        return 0;
+    }
+    else {
+        LOG_INF("detected bq device number: 0x%x", device_number);
+    }
 
-
-    i2c_write(0x10, tx_data, 3);
-
-
-    vTaskDelay(100);
-    // vTaskDelay(2);
-
-    uint8_t rx_buff[4] = { 0 };
-
-    gpio_set_level(48, 1); // GPIO_TEST_I2C
-    i2c_read(0x40, rx_buff, 3);
-    gpio_set_level(48, 0); // GPIO_TEST_I2C
-    // printf("i2c rx: ");
-    // for (int i = 0; i < sizeof(rx_buff); i++)
-    // {
-    //     printf("%x ", rx_buff[i]);
-    // }
-    // putchar('\n');
-
-    return 0x0000;
+    return device_number;
 }

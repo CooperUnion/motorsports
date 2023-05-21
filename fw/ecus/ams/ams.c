@@ -56,9 +56,10 @@ static void ams_init()
     bms_ic_spi_config_reg0();
     bms_ic_spi_config_reg12();
 
-    // bms_ic_swap_to_i2c();
+    bms_ic_swap_to_i2c();
 }
 
+#include "bms.h"
 
 static void ams_1Hz()
 {
@@ -79,31 +80,34 @@ static void ams_1Hz()
     // }
     counter++;
 
-    printf("spi\n");
+    // printf("spi\n");
     // device_number = bms_ic_spi_device_number();
-    bms_ic_spi_config_reg0();
-    bms_ic_spi_config_reg12();
+    // bms_ic_spi_config_reg0();
+    // bms_ic_spi_config_reg12();
 
-    if (is_spi)
-    {
-    }
-    else
-    {
-        // printf("i2c\n");
-        // device_number = bms_ic_i2c_device_number();
-    }
+    // if (is_spi)
+    // {
+    // }
+    // else
+    // {
+    //     // printf("i2c\n");
+    //     // device_number = bms_ic_i2c_device_number();
+    // }
 
-    // device_number = bms_ic_i2c_device_number();
-    device_number = bms_ic_spi_device_number();
-    printf("counter: %ld || Device Number: %x\n", counter, device_number);
+    // // device_number = bms_ic_i2c_device_number();
+    // device_number = bms_ic_spi_device_number();
+    // printf("counter: %ld || Device Number: %x\n", counter, device_number);
 
-    bms_ic_cell_voltages(cell_voltages);
+    // bms_ic_cell_voltages(cell_voltages);
 
     // printf("is_spi: %d\n", is_spi);
 
     // bms_ic_test_i2c();
 
     // successfully swap to i2c
+    const uint16_t dev_num = bms_ic_i2c_device_number();
+    Bms bms;
+    bms_read_voltages(&bms);
 }
 
 // do what's right | made with <3 at Cooper Union
