@@ -2,13 +2,30 @@ bitrate: 500000
 
 nodes:
 - PCH:
+    rx:
+    - MOM_SystemCmd
     messages:
     - Status:
         cycletime: 20
         id: 0x40
+
         signals:
         - counter:
             width: 8
+        - state:
+            enumerated_values:
+            - INIT
+            - IDLE
+            - PRECHARGING
+            - CONNECTED
+            - DISCONNECTING
+            - FAULT
+        - calibratedAdcMv:
+            width: 12
+        - dcBusVoltage:
+            width: 12
+            unit: volts
+            scale: 0.1
 
 - SHUT:
 - DASH:
@@ -179,3 +196,14 @@ nodes:
         - bmb4_cell14: *bmbcell
         - bmb4_cell15: *bmbcell
         - bmb4_cell16: *bmbcell
+- MOM:
+    messages:
+    - SystemCmd:
+        cycletime: 30
+        id: 0x10
+
+        signals:
+        - tractiveSystemRunlevel:
+            enumerated_values:
+            - ABSOLUTELY_NO_HV
+            - PLEASE_HV
