@@ -31,7 +31,6 @@ nodes:
 - DASH:
 
 - AMS:
-    rx: "*"
     messages:
     - Bmb0_CellVoltages1_4:
         id: 0x63
