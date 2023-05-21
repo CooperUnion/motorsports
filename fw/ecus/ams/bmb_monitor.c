@@ -49,12 +49,14 @@ void bmb_monitor_task(void * unused) {
     for (;;) {
         // todo: only doing BMB_0 for now
         // for (Bmb_E bmb = BMB_0; bmb < BMB_NUM_BMBS; bmb++) {
-            Bmb_E bmb = BMB_0;
+            Bmb_E bmb = BMB_0; // todo: remove
             set_current_bmb(bmb);
-            bms_read_voltages(&bmbs[bmb]);
-            bms_update_error_flags(&bmbs[bmb]);
+
+            bms_read_voltages(current_bmb);
+            bms_update_error_flags(current_bmb);
         // }
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
+// do what's right | made with <3 at Cooper Union

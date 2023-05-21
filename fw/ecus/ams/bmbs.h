@@ -12,3 +12,5 @@ typedef enum {
 } Bmb_E;
 
 extern Bms bmbs[BMB_NUM_BMBS];
+
+// do what's right | made with <3 at Cooper Union
