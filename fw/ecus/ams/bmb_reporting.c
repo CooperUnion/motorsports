@@ -2,6 +2,13 @@
 
 #include "opencan_tx.h"
 
+#define FOREACH_BMB(action) \
+    action(0) \
+    action(1) \
+    action(2) \
+    action(3) \
+    action(4)
+
 #define CANTX_CELLVOLTAGES_1_4(BMB_NUM) \
     void CANTX_populate_AMS_Bmb##BMB_NUM##_CellVoltages1_4( \
     struct CAN_Message_AMS_Bmb##BMB_NUM##_CellVoltages1_4 * const m) {  \
@@ -38,16 +45,17 @@
         m->AMS_bmb##BMB_NUM##_cell16 = bmbs[BMB_##BMB_NUM].status.cell_voltages[15]; \
     }
 
-#define FOREACH_BMB(action) \
-    action(0) \
-    action(1) \
-    action(2) \
-    action(3) \
-    action(4)
-
 FOREACH_BMB(CANTX_CELLVOLTAGES_1_4)
 FOREACH_BMB(CANTX_CELLVOLTAGES_5_8)
 FOREACH_BMB(CANTX_CELLVOLTAGES_9_12)
 FOREACH_BMB(CANTX_CELLVOLTAGES_13_16)
+
+#define CANTX_BMBSTATUS(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_Status( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_Status * const m) {  \
+        m->AMS_bmb##BMB_NUM##_balancingStatus = bmbs[BMB_##BMB_NUM].status.balancing_status; \
+    }
+
+FOREACH_BMB(CANTX_BMBSTATUS)
 
 // do what's right | made with <3 at Cooper Union

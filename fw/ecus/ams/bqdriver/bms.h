@@ -146,7 +146,7 @@ typedef struct
 
     atomic float soc; ///< Calculated State of Charge (%)
 
-    atomic uint32_t balancing_status; ///< holds on/off status of balancing switches
+    atomic uint16_t balancing_status; ///< holds on/off status of balancing switches
     atomic time_t no_idle_timestamp;  ///< Stores last time of current > idle threshold
 
     atomic uint32_t error_flags; ///< Bit array for different BmsErrorFlag errors
@@ -292,6 +292,13 @@ bool bms_dis_allowed(Bms *bms);
  * @returns if balancing is allowed
  */
 bool bms_balancing_allowed(Bms *bms);
+
+/**
+ * Update balancing status
+ *
+ * @param bms Pointer to BMS object.
+ */
+void bms_update_balancing(Bms *bms);
 
 /**
  * Reset SOC to specified value or calculate based on average cell open circuit voltage

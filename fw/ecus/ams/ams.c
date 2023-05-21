@@ -11,7 +11,6 @@
 #include <freertos/task.h>
 
 #include "bmb_monitor.h"
-#include "bms_ic.h"
 #include "bqdriver/interface.h"
 #include "ember_taskglue.h"
 #include "node_pins.h"

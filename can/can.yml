@@ -4,6 +4,7 @@ nodes:
 
 - AMS:
     messages:
+    # --- Cell Voltages --- #
     - Bmb0_CellVoltages1_4:
         id: 0x63
         cycletime: 100
@@ -168,6 +169,37 @@ nodes:
         - bmb4_cell15: *bmbcell
         - bmb4_cell16: *bmbcell
 
+    # --- Balancing Status --- #
+    - Bmb0_Status:
+        id: 0x80
+        cycletime: 100
+        signals:
+        - bmb0_balancingStatus:
+            width: 16
+    - Bmb1_Status:
+        id: 0x81
+        cycletime: 100
+        signals:
+        - bmb1_balancingStatus:
+            width: 16
+    - Bmb2_Status:
+        id: 0x82
+        cycletime: 100
+        signals:
+        - bmb2_balancingStatus:
+            width: 16
+    - Bmb3_Status:
+        id: 0x83
+        cycletime: 100
+        signals:
+        - bmb3_balancingStatus:
+            width: 16
+    - Bmb4_Status:
+        id: 0x84
+        cycletime: 100
+        signals:
+        - bmb4_balancingStatus:
+            width: 16
 - DASH:
 
 - MOM:

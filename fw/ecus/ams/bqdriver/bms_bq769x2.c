@@ -22,8 +22,6 @@
 
 // LOG_MODULE_REGISTER(bq769x0, CONFIG_LOG_DEFAULT_LEVEL);
 
-static void bms_update_balancing(Bms *bms);
-
 static int detect_num_cells(Bms *bms)
 {
     bms_read_voltages(bms);
@@ -245,7 +243,7 @@ int bms_apply_balancing_conf(Bms *bms)
     return err;
 }
 
-static void bms_update_balancing(Bms *bms)
+void bms_update_balancing(Bms *bms)
 {
     uint16_t balancing_status;
     bq769x2_subcmd_read_u2(BQ769X2_SUBCMD_CB_ACTIVE_CELLS, &balancing_status);

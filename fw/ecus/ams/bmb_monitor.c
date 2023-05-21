@@ -54,6 +54,7 @@ void bmb_monitor_task(void * unused) {
 
             bms_read_voltages(current_bmb);
             bms_update_error_flags(current_bmb);
+            bms_update_balancing(current_bmb);
         // }
         vTaskDelay(pdMS_TO_TICKS(10));
     }
