@@ -59,6 +59,8 @@ enum CellType
     CELL_TYPE_LTO         ///< NMC/Titanate (2.4 V nominal)
 };
 
+#define atomic _Atomic
+
 /**
  * BMS configuration values, stored in RAM. The configuration is not automatically applied after
  * values are changed!
@@ -114,40 +116,40 @@ typedef struct
  */
 typedef struct
 {
-    uint16_t state;  ///< Current state of the battery
-    bool chg_enable; ///< Manual enable/disable setting for charging
-    bool dis_enable; ///< Manual enable/disable setting for discharging
+    atomic uint16_t state;  ///< Current state of the battery
+    atomic bool chg_enable; ///< Manual enable/disable setting for charging
+    atomic bool dis_enable; ///< Manual enable/disable setting for discharging
 
-    uint16_t connected_cells; ///< \brief Actual number of cells connected (might
+    atomic uint16_t connected_cells; ///< \brief Actual number of cells connected (might
                               ///< be less than BOARD_NUM_CELLS_MAX)
 
-    float cell_voltages[BOARD_NUM_CELLS_MAX]; ///< Single cell voltages (V)
-    float cell_voltage_max;                   ///< Maximum cell voltage (V)
-    float cell_voltage_min;                   ///< Minimum cell voltage (V)
-    float cell_voltage_avg;                   ///< Average cell voltage (V)
-    float pack_voltage;                       ///< Battery external pack voltage (V)
-    float stack_voltage;                      ///< Battery internal stack voltage (V)
+    atomic float cell_voltages[BOARD_NUM_CELLS_MAX]; ///< Single cell voltages (V)
+    atomic float cell_voltage_max;                   ///< Maximum cell voltage (V)
+    atomic float cell_voltage_min;                   ///< Minimum cell voltage (V)
+    atomic float cell_voltage_avg;                   ///< Average cell voltage (V)
+    atomic float pack_voltage;                       ///< Battery external pack voltage (V)
+    atomic float stack_voltage;                      ///< Battery internal stack voltage (V)
 
-    float pack_current; ///< \brief Battery pack current, charging direction
+    atomic float pack_current; ///< \brief Battery pack current, charging direction
                         ///< has positive sign (A)
 
-    float bat_temps[BOARD_NUM_THERMISTORS_MAX]; ///< Battery temperatures (°C)
-    float bat_temp_max;                         ///< Maximum battery temperature (°C)
-    float bat_temp_min;                         ///< Minimum battery temperature (°C)
-    float bat_temp_avg;                         ///< Average battery temperature (°C)
-    float mosfet_temp;                          ///< MOSFET temperature (°C)
-    float ic_temp;                              ///< Internal BMS IC temperature (°C)
-    float mcu_temp;                             ///< MCU temperature (°C)
+    atomic float bat_temps[BOARD_NUM_THERMISTORS_MAX]; ///< Battery temperatures (°C)
+    atomic float bat_temp_max;                         ///< Maximum battery temperature (°C)
+    atomic float bat_temp_min;                         ///< Minimum battery temperature (°C)
+    atomic float bat_temp_avg;                         ///< Average battery temperature (°C)
+    atomic float mosfet_temp;                          ///< MOSFET temperature (°C)
+    atomic float ic_temp;                              ///< Internal BMS IC temperature (°C)
+    atomic float mcu_temp;                             ///< MCU temperature (°C)
 
-    bool full;  ///< CV charging to cell_chg_voltage finished
-    bool empty; ///< Battery is discharged below cell_dis_voltage
+    atomic bool full;  ///< CV charging to cell_chg_voltage finished
+    atomic bool empty; ///< Battery is discharged below cell_dis_voltage
 
-    float soc; ///< Calculated State of Charge (%)
+    atomic float soc; ///< Calculated State of Charge (%)
 
-    uint32_t balancing_status; ///< holds on/off status of balancing switches
-    time_t no_idle_timestamp;  ///< Stores last time of current > idle threshold
+    atomic uint32_t balancing_status; ///< holds on/off status of balancing switches
+    atomic time_t no_idle_timestamp;  ///< Stores last time of current > idle threshold
 
-    uint32_t error_flags; ///< Bit array for different BmsErrorFlag errors
+    atomic uint32_t error_flags; ///< Bit array for different BmsErrorFlag errors
 } BmsStatus;
 
 /**
@@ -176,6 +178,7 @@ typedef struct
 {
     BmsConfig conf;
     BmsStatus status;
+    uint8_t i2c_addr;
 } Bms;
 
 /**

@@ -14,7 +14,8 @@ enum zeph_errors {
     EIO = -5,
 };
 
-#define __ASSERT(a, ...) (assert(a), fprintf(stderr, __VA_ARGS__))
+// todo: message is ignored
+#define __ASSERT(a, ...) assert(a)
 #define CLAMP(x, low, high) ((x) > (high) ? (high) : ((x) < (low) ? (low) : (x)))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
@@ -26,3 +27,5 @@ int i2c_write_read(uint16_t addr,
 
 int i2c_write(const uint8_t *buf,
 	uint32_t num_bytes, uint16_t addr);
+
+// do what's right | made with <3 at Cooper Union

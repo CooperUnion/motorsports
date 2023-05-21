@@ -6,18 +6,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "driver/gpio.h"
+#include <driver/gpio.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
-#include "ember_taskglue.h"
+#include "bmb_monitor.h"
 #include "bms_ic.h"
-#include "bqdriver/bms.h"
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-
-#define GPIO_BLINK_LED 46
-
-#define GPIO_TEST_I2C 48
+#include "bqdriver/interface.h"
+#include "ember_taskglue.h"
+#include "node_pins.h"
 
 static void ams_init();
 static void ams_10Hz();
@@ -34,26 +31,29 @@ ember_rate_funcs_S module_rf = {
 static void ams_init()
 {
     // SETUP AND PROGRAM THE BMS
-    gpio_set_direction(GPIO_BLINK_LED, GPIO_MODE_INPUT_OUTPUT);
+    gpio_config(&(gpio_config_t){
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = BIT64(NODE_BOARD_PIN_LED1),
+    });
 
-    bms_ic_init();
+    printf("initializing i2c...\n");
+    bq769x2_init();
+
+    printf("starting bmb monitor task...\n");
+    static TaskHandle_t bmb_monitor_handle;
+    xTaskCreatePinnedToCore(bmb_monitor_task, "BMB_MONITOR", 8192, 0, 3, &bmb_monitor_handle, 0);
 }
 
 static void ams_10Hz()
 {
     static bool led1 = false;
-    gpio_set_level(GPIO_BLINK_LED, led1);
+    gpio_set_level(NODE_BOARD_PIN_LED1, led1);
     led1 = !led1;
 }
 
 static void ams_1Hz()
 {
-    fprintf(stderr, "reading dev num and voltages\n");
-    const uint16_t dev_num = bms_ic_i2c_device_number();
-    Bms bms;
-    bms_read_voltages(&bms);
-    bms_update_error_flags(&bms);
-    bms_print_registers(&bms);
+
 }
 
 // do what's right | made with <3 at Cooper Union

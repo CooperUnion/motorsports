@@ -3,9 +3,9 @@
 #include <driver/i2c.h>
 #include <freertos/FreeRTOS.h>
 
+#include "ams_pins.h"
+
 #define BMS_IC_I2C_HOST I2C_NUM_0
-#define AMS_PIN_SDA 26
-#define AMS_PIN_SCL 21
 
 uint64_t k_uptime_get(void) {
     // todo
@@ -57,3 +57,5 @@ int i2c_write(const uint8_t *buf,
 {
     return i2c_master_write_to_device(BMS_IC_I2C_HOST, addr, buf, num_bytes, pdMS_TO_TICKS(5));
 }
+
+// do what's right | made with <3 at Cooper Union

@@ -1,3 +1,81 @@
+message_templates:
+  - CellVoltages1_4:
+      cycletime: 10
+      signals:
+      - cell1:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell2:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell3:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell4:
+          width: 16
+          scale: 0.001
+          unit: V
+  - CellVoltages5_8:
+      cycletime: 10
+      signals:
+      - cell5:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell6:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell7:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell8:
+          width: 16
+          scale: 0.001
+          unit: V
+  - CellVoltages9_12:
+      cycletime: 10
+      signals:
+      - cell9:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell10:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell11:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell12:
+          width: 16
+          scale: 0.001
+          unit: V
+  - CellVoltages13_16:
+      cycletime: 10
+      signals:
+      - cell13:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell14:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell15:
+          width: 16
+          scale: 0.001
+          unit: V
+      - cell16:
+          width: 16
+          scale: 0.001
+          unit: V
+
 nodes:
 - PCH:
     messages:
@@ -12,3 +90,20 @@ nodes:
 - DASH:
 
 - AMS:
+    messages:
+    - BMB0_CellVoltages1_4:
+        cycletime: 10
+        id: 0x50
+        from_template: CellVoltages1_4
+    - BMB0_CellVoltages5_8:
+        cycletime: 10
+        id: 0x51
+        from_template: CellVoltages5_8
+    - BMB0_CellVoltages9_12:
+        cycletime: 10
+        id: 0x52
+        from_template: CellVoltages9_12
+    - BMB0_CellVoltages13_16:
+        cycletime: 10
+        id: 0x53
+        from_template: CellVoltages13_16

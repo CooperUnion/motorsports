@@ -14,19 +14,14 @@
 
 #include <string.h>
 
-// #include <zephyr/drivers/i2c.h>
-// #include <zephyr/kernel.h>
-
-// LOG_MODULE_REGISTER(bq769x2_if, CONFIG_LOG_DEFAULT_LEVEL);
-
-// #define BQ769X2_NODE DT_INST(0, ti_bq769x2_i2c)
-
 static bool config_update_mode_enabled;
 
-#ifndef UNIT_TEST
+static uint8_t current_bmb_addr = 0;
 
-// todo
-static const uint8_t i2c_address = (0x10 >> 1);
+void set_bmb_address(uint8_t addr)
+{
+    current_bmb_addr = addr;
+}
 
 /*
  * Currently only supporting I2C without CRC (default setting for BQ76952 part number)
@@ -45,12 +40,12 @@ int bq769x2_write_bytes(const uint8_t reg_addr, const uint8_t *data, const size_
     buf[0] = reg_addr; // first byte contains register address
     memcpy(buf + 1, data, num_bytes);
 
-    return i2c_write(buf, num_bytes + 1, i2c_address);
+    return i2c_write(buf, num_bytes + 1, current_bmb_addr);
 }
 
 int bq769x2_read_bytes(const uint8_t reg_addr, uint8_t *data, const size_t num_bytes)
 {
-    return i2c_write_read(i2c_address, &reg_addr, 1, data, num_bytes);
+    return i2c_write_read(current_bmb_addr, &reg_addr, 1, data, num_bytes);
 }
 
 int bq769x2_init()
@@ -63,8 +58,6 @@ int bq769x2_init()
         return 0;
     }
 }
-
-#endif // UNIT_TEST
 
 int bq769x2_direct_read_u2(const uint8_t reg_addr, uint16_t *value)
 {

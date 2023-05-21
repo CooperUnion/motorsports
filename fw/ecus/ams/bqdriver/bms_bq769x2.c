@@ -479,7 +479,6 @@ void bms_read_voltages(Bms *bms)
     for (int i = 0; i < BOARD_NUM_CELLS_MAX; i++) {
         bq769x2_direct_read_i2(BQ769X2_CMD_VOLTAGE_CELL_1 + i * 2, &voltage);
         bms->status.cell_voltages[i] = voltage * 1e-3F; // unit: 1 mV
-        LOG_DBG("cell %d: %.3f V", i, bms->status.cell_voltages[i]);
 
         if (bms->status.cell_voltages[i] > 0.5F) {
             conn_cells++;

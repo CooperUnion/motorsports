@@ -7,6 +7,8 @@
 #ifndef BQ769X2_INTERFACE_H
 #define BQ769X2_INTERFACE_H
 
+void set_bmb_address(uint8_t addr);
+
 /** @file
  *
  * @brief
@@ -14,10 +16,6 @@
  */
 
 #include "board.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include <stdint.h>
 #include <string.h>
@@ -288,9 +286,5 @@ int bq769x2_datamem_write_i2(const uint16_t reg_addr, int16_t value);
  * @returns 0 if successful, negative errno otherwise
  */
 int bq769x2_datamem_write_f4(const uint16_t reg_addr, float value);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // BQ769X2_INTERFACE_H
