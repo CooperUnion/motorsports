@@ -27,6 +27,7 @@ nodes:
 
 - SHUT:
 - DASH:
+- BMS:
 - MOM:
     messages:
     - SystemCmd:

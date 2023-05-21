@@ -1,0 +1,8 @@
+{
+    "name": "fsae-bms",
+    "version": "rolling",
+    "description": "BMS ECU",
+    "build": {
+      "libLDFMode": "deep"
+    }
+  }
