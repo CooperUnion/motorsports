@@ -55,7 +55,7 @@ int bq769x2_read_bytes(const uint8_t reg_addr, uint8_t *data, const size_t num_b
 
 int bq769x2_init()
 {
-    if (!i2c_init()) {
+    if (i2c_init()) {
         LOG_ERR("I2C device not ready");
         return -ENODEV;
     }

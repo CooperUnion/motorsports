@@ -44,18 +44,18 @@ static void ams_init()
 
     // gpio_set_level(GPIO_BLINK_LED, 1);
 
-    bms_ic_init();
+    // bms_ic_init();
 
-    // set I2C address
-    // swap_to_i2c()
+    // // set I2C address
+    // // swap_to_i2c()
 
-    vTaskDelay(2000); // delay to printout spi transactions on init
+    // vTaskDelay(2000); // delay to printout spi transactions on init
 
-    device_number = bms_ic_spi_device_number();
-    device_number = bms_ic_spi_device_number();
+    // device_number = bms_ic_spi_device_number();
+    // device_number = bms_ic_spi_device_number();
 
-    bms_ic_spi_config_reg0();
-    bms_ic_spi_config_reg12();
+    // bms_ic_spi_config_reg0();
+    // bms_ic_spi_config_reg12();
 
     bms_ic_swap_to_i2c();
 }
@@ -104,9 +104,12 @@ static void ams_1Hz()
     // bms_ic_test_i2c();
 
     // successfully swap to i2c
+    fprintf(stderr, "reading dev num and voltages\n");
     const uint16_t dev_num = bms_ic_i2c_device_number();
     Bms bms;
     bms_read_voltages(&bms);
+    bms_update_error_flags(&bms);
+    bms_print_registers(&bms);
 }
 
 // do what's right | made with <3 at Cooper Union

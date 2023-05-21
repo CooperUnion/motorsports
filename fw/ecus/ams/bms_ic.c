@@ -10,8 +10,10 @@
 
 #include "ams_pins.h"
 #include "bms_ic.h"
+#include "bqdriver/bms.h"
 #include "bqdriver/bq769x2.h"
 #include "bqdriver/interface.h"
+#include "bqdriver/registers.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -37,6 +39,13 @@ static uint8_t CRC8(uint8_t *data, uint8_t len);
 static uint8_t Checksum(uint8_t *ptr, uint8_t len);
 
 static void bms_ic_print_msg(spi_transaction_t msg, esp_err_t err);
+
+static Bms bms = {
+    .conf = {
+        .bal_cell_voltage_diff = 0.01,
+        .bal_cell_voltage_min = 3.2,
+    }
+};
 
 // read subcommand
 // Write bytes of data starting at addr
@@ -379,14 +388,23 @@ void bms_ic_swap_to_i2c()
     // Command only subcommand
     // #define SWAP_TO_I2C 0x29E7
 
-    uint8_t tx_data[4] = { 0 };
-    tx_data[0] = SWAP_TO_I2C & 0x00FF;
-    tx_data[1] = (SWAP_TO_I2C & 0xFF00) >> 8;
+    // uint8_t tx_data[4] = { 0 };
+    // tx_data[0] = SWAP_TO_I2C & 0x00FF;
+    // tx_data[1] = (SWAP_TO_I2C & 0xFF00) >> 8;
 
-    spi_write(0x3E, tx_data, 2);
+    // spi_write(0x3E, tx_data, 2);
 
-    vTaskDelay(pdMS_TO_TICKS(100));
+    vTaskDelay(pdMS_TO_TICKS(200));
+    printf("initializing bq...\n");
     bq769x2_init();
+    int bms_apply_balancing_conf(Bms *bms);
+    printf("done, waiting 5 seconds...\n");
+    vTaskDelay(pdMS_TO_TICKS(200));
+    printf("applying balancing config...\n");
+    bq769x2_config_update_mode(true);
+    bq769x2_datamem_write_u2(BQ769X2_SET_CONF_VCELL_MODE, 0xFFFF);
+    bms_apply_balancing_conf(&bms);
+    bq769x2_config_update_mode(false);
 }
 
 

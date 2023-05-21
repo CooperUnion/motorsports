@@ -32,13 +32,13 @@ int i2c_init(void) {
 
     uint32_t interrupt_flags = 0;
 
-    i2c_driver_install(
+    ESP_ERROR_CHECK(i2c_driver_install(
         BMS_IC_I2C_HOST,
         I2C_MODE_MASTER,
         0, // slv_rx/tx buffer length is ignored in master mode
         0, // slv_rx/tx buffer length is ignored in master mode
         interrupt_flags
-    );
+    ));
 
     // ESP_ERROR_CHECK(i2c_set_timeout(BMS_IC_I2C_HOST, 50000));
 
