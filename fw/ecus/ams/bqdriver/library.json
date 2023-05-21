@@ -1,0 +1,8 @@
+{
+  "name": "fsae-import-bqdriver",
+  "version": "rolling",
+  "description": "bq769x2 driver from LibreSolar",
+  "build": {
+    "libLDFMode": "deep"
+  }
+}

@@ -10,6 +10,7 @@
 
 #include "ember_taskglue.h"
 #include "bms_ic.h"
+#include "bqdriver/bms.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -58,8 +59,6 @@ static void ams_init()
 
     bms_ic_swap_to_i2c();
 }
-
-#include "bms.h"
 
 static void ams_1Hz()
 {

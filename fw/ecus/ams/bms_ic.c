@@ -8,20 +8,13 @@
 #include "driver/i2c.h"
 #include "driver/gpio.h"
 
+#include "ams_pins.h"
 #include "bms_ic.h"
-#include "bq769x2.h"
-#include "interface.h"
+#include "bqdriver/bq769x2.h"
+#include "bqdriver/interface.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
-#define AMS_PIN_MISO 37
-#define AMS_PIN_MOSI 35
-#define AMS_PIN_SCLK 36
-#define AMS_PIN_CS   33
-
-#define AMS_PIN_SDA 26
-#define AMS_PIN_SCL 21
 
 #define BMS_IC_I2C_HOST I2C_NUM_0
 
@@ -481,9 +474,9 @@ void bms_ic_swap_to_i2c()
 //     i2c_cmd_link_delete(cmd_handle);
 // }
 
-#include "interface.h"
-#include "registers.h"
-#include "helper.h"
+#include "bqdriver/interface.h"
+#include "bqdriver/registers.h"
+#include "bqdriver/helper.h"
 
 uint16_t bms_ic_i2c_device_number()
 {
