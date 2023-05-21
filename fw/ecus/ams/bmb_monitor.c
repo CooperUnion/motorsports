@@ -47,6 +47,7 @@ void bmb_monitor_task(void * unused) {
     (void)unused;
 
     for (;;) {
+        // todo: only doing BMB_0 for now
         // for (Bmb_E bmb = BMB_0; bmb < BMB_NUM_BMBS; bmb++) {
             Bmb_E bmb = BMB_0;
             set_current_bmb(bmb);
