@@ -7,8 +7,6 @@
 #ifndef BQ769X2_INTERFACE_H
 #define BQ769X2_INTERFACE_H
 
-int bq769x2_subcmd_read(const uint16_t subcmd, uint32_t *value, const size_t num_bytes);
-
 void set_bmb_address(uint8_t addr);
 
 /** @file
