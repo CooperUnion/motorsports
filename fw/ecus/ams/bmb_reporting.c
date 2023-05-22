@@ -7,7 +7,7 @@ void CANTX_populateTemplate_BMB0_CellVoltages1_4(struct CAN_TMessage_CellVoltage
     m->cell2 = bmbs[BMB_0].status.cell_voltages[1];
     m->cell3 = bmbs[BMB_0].status.cell_voltages[2];
     m->cell4 = bmbs[BMB_0].status.cell_voltages[3];
-    printf("cell1: %f\n", m->cell1);
+    // printf("cell1: %f\n", m->cell1);
 }
 
 void CANTX_populateTemplate_BMB0_CellVoltages5_8(struct CAN_TMessage_CellVoltages5_8 * const m) {

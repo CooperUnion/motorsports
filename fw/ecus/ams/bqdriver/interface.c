@@ -86,7 +86,7 @@ int bq769x2_direct_read_i2(const uint8_t reg_addr, int16_t *value)
     return err;
 }
 
-static int bq769x2_subcmd_read(const uint16_t subcmd, uint32_t *value, const size_t num_bytes)
+int bq769x2_subcmd_read(const uint16_t subcmd, uint32_t *value, const size_t num_bytes)
 {
     static uint8_t buf_data[0x20];
     int err;
