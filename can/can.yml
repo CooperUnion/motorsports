@@ -335,6 +335,125 @@ nodes:
         - bmb4_safetyC_latchedDischargeShortCircuit: *bool_fault
         - bmb4_safetyC_overcurrentInDischarge3: *bool_fault
 
+    # --- Battery Status Register --- #
+    - Bmb0_BatteryStatus:
+        id: 0x95
+        cycletime: 250
+        signals:
+        - bmb0_batteryStatus_configUpdateMode: &yes_no
+            enumerated_values:
+            - NO: 0
+            - YES: 1
+        - bmb0_batteryStatus_prechargeMode: *yes_no
+        - bmb0_batteryStatus_sleepEn: *yes_no
+        - bmb0_batteryStatus_powerOnResetHappened: *yes_no
+        - bmb0_batteryStatus_previousResetWasWatchdog: *yes_no
+        - bmb0_batteryStatus_cellOpenWireChecksRunning: *yes_no
+        - bmb0_batteryStatus_otpPending: *yes_no
+        - bmb0_batteryStatus_otpConditionsValid: *yes_no
+        - bmb0_batteryStatus_sec0:
+            width: 1
+        - bmb0_batteryStatus_sec1:
+            width: 1
+        - bmb0_batteryStatus_fusePinState:
+            width: 1
+        - bmb0_batteryStatus_safetyFaultTriggered: *yes_no
+        - bmb0_batteryStatus_permanentFaultTriggered: *yes_no
+        - bmb0_batteryStatus_shutdownPending: *yes_no
+        - bmb0_batteryStatus_inSleepMode: *yes_no
+
+    - Bmb1_BatteryStatus:
+        id: 0x96
+        cycletime: 250
+        signals:
+        - bmb1_batteryStatus_configUpdateMode: *yes_no
+        - bmb1_batteryStatus_prechargeMode: *yes_no
+        - bmb1_batteryStatus_sleepEn: *yes_no
+        - bmb1_batteryStatus_powerOnResetHappened: *yes_no
+        - bmb1_batteryStatus_previousResetWasWatchdog: *yes_no
+        - bmb1_batteryStatus_cellOpenWireChecksRunning: *yes_no
+        - bmb1_batteryStatus_otpPending: *yes_no
+        - bmb1_batteryStatus_otpConditionsValid: *yes_no
+        - bmb1_batteryStatus_sec0:
+            width: 1
+        - bmb1_batteryStatus_sec1:
+            width: 1
+        - bmb1_batteryStatus_fusePinState:
+            width: 1
+        - bmb1_batteryStatus_safetyFaultTriggered: *yes_no
+        - bmb1_batteryStatus_permanentFaultTriggered: *yes_no
+        - bmb1_batteryStatus_shutdownPending: *yes_no
+        - bmb1_batteryStatus_inSleepMode: *yes_no
+
+    - Bmb2_BatteryStatus:
+        id: 0x97
+        cycletime: 250
+        signals:
+        - bmb2_batteryStatus_configUpdateMode: *yes_no
+        - bmb2_batteryStatus_prechargeMode: *yes_no
+        - bmb2_batteryStatus_sleepEn: *yes_no
+        - bmb2_batteryStatus_powerOnResetHappened: *yes_no
+        - bmb2_batteryStatus_previousResetWasWatchdog: *yes_no
+        - bmb2_batteryStatus_cellOpenWireChecksRunning: *yes_no
+        - bmb2_batteryStatus_otpPending: *yes_no
+        - bmb2_batteryStatus_otpConditionsValid: *yes_no
+        - bmb2_batteryStatus_sec0:
+            width: 1
+        - bmb2_batteryStatus_sec1:
+            width: 1
+        - bmb2_batteryStatus_fusePinState:
+            width: 1
+        - bmb2_batteryStatus_safetyFaultTriggered: *yes_no
+        - bmb2_batteryStatus_permanentFaultTriggered: *yes_no
+        - bmb2_batteryStatus_shutdownPending: *yes_no
+        - bmb2_batteryStatus_inSleepMode: *yes_no
+
+    - Bmb3_BatteryStatus:
+        id: 0x98
+        cycletime: 250
+        signals:
+        - bmb3_batteryStatus_configUpdateMode: *yes_no
+        - bmb3_batteryStatus_prechargeMode: *yes_no
+        - bmb3_batteryStatus_sleepEn: *yes_no
+        - bmb3_batteryStatus_powerOnResetHappened: *yes_no
+        - bmb3_batteryStatus_previousResetWasWatchdog: *yes_no
+        - bmb3_batteryStatus_cellOpenWireChecksRunning: *yes_no
+        - bmb3_batteryStatus_otpPending: *yes_no
+        - bmb3_batteryStatus_otpConditionsValid: *yes_no
+        - bmb3_batteryStatus_sec0:
+            width: 1
+        - bmb3_batteryStatus_sec1:
+            width: 1
+        - bmb3_batteryStatus_fusePinState:
+            width: 1
+        - bmb3_batteryStatus_safetyFaultTriggered: *yes_no
+        - bmb3_batteryStatus_permanentFaultTriggered: *yes_no
+        - bmb3_batteryStatus_shutdownPending: *yes_no
+        - bmb3_batteryStatus_inSleepMode: *yes_no
+
+    - Bmb4_BatteryStatus:
+        id: 0x99
+        cycletime: 250
+        signals:
+        - bmb4_batteryStatus_configUpdateMode: *yes_no
+        - bmb4_batteryStatus_prechargeMode: *yes_no
+        - bmb4_batteryStatus_sleepEn: *yes_no
+        - bmb4_batteryStatus_powerOnResetHappened: *yes_no
+        - bmb4_batteryStatus_previousResetWasWatchdog: *yes_no
+        - bmb4_batteryStatus_cellOpenWireChecksRunning: *yes_no
+        - bmb4_batteryStatus_otpPending: *yes_no
+        - bmb4_batteryStatus_otpConditionsValid: *yes_no
+        - bmb4_batteryStatus_sec0:
+            width: 1
+        - bmb4_batteryStatus_sec1:
+            width: 1
+        - bmb4_batteryStatus_fusePinState:
+            width: 1
+        - bmb4_batteryStatus_safetyFaultTriggered: *yes_no
+        - bmb4_batteryStatus_permanentFaultTriggered: *yes_no
+        - bmb4_batteryStatus_shutdownPending: *yes_no
+        - bmb4_batteryStatus_inSleepMode: *yes_no
+
 - DASH:
 
 - MOM:

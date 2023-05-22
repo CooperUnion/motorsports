@@ -145,6 +145,7 @@ typedef struct
     atomic SAFETY_STATUS_A_Type safety_status_A; ///< Safety status A
     atomic SAFETY_STATUS_B_Type safety_status_B; ///< Safety status B
     atomic SAFETY_STATUS_C_Type safety_status_C; ///< Safety status C
+    atomic BATTERY_STATUS_Type battery_status;
 } BmsStatus;
 
 /**

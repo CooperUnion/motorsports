@@ -508,6 +508,7 @@ void bms_update_error_flags(Bms *bms)
     SAFETY_STATUS_B_Type stat_b;
     SAFETY_STATUS_C_Type stat_c;
     FET_STATUS_Type fet_status;
+    BATTERY_STATUS_Type battery_status;
 
     // safety alert: immediately set if a fault condition occured
     // safety fault (status registers): only set if alert persists for specified time
@@ -516,6 +517,7 @@ void bms_update_error_flags(Bms *bms)
     bq769x2_read_bytes(BQ769X2_CMD_SAFETY_STATUS_B, &stat_b.byte, 1);
     bq769x2_read_bytes(BQ769X2_CMD_SAFETY_STATUS_C, &stat_c.byte, 1);
     bq769x2_read_bytes(BQ769X2_CMD_FET_STATUS, &fet_status.byte, 1);
+    bq769x2_read_bytes(BQ769X2_CMD_BATTERY_STATUS, battery_status.bytes, 2);
 
     error_flags |= stat_a.CUV << BMS_ERR_CELL_UNDERVOLTAGE;
     error_flags |= stat_a.COV << BMS_ERR_CELL_OVERVOLTAGE;
@@ -535,6 +537,7 @@ void bms_update_error_flags(Bms *bms)
     bms->status.safety_status_A = stat_a;
     bms->status.safety_status_B = stat_b;
     bms->status.safety_status_C = stat_c;
+    bms->status.battery_status = battery_status;
 }
 
 void bms_handle_errors(Bms *bms)

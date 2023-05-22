@@ -465,6 +465,30 @@ typedef union {
 } SAFETY_STATUS_C_Type;
 
 typedef union {
+
+    struct
+    {
+        uint8_t CFGUPDATE : 1;  // is device in CONFIG_UPDATE mode
+        uint8_t PCHG_MODE : 1;  // is device in PRECHARGE mode
+        uint8_t SLEEP_EN : 1;   // is SLEEP mode allowed
+        uint8_t POR : 1;        // has full reset occured since last exit from CONFIG_UPDATE mode
+        uint8_t WD : 1;         // was previous reset caused by internal watchdog
+        uint8_t COW_CHK : 1;    // are cell open-wire checks occurring
+        uint8_t OTPW : 1;       // is data waiting to be written to OTP
+        uint8_t OTPB : 1;       // are conditions valid for OTP programming
+
+        uint8_t SEC0 : 1;       // security state bit 0
+        uint8_t SEC1 : 1;       // security state bit 1
+        uint8_t FUSE : 1;       // state of FUSE pin
+        uint8_t SS : 1;         // is a safety fault triggered
+        uint8_t PF : 1;         // is a permanent failure triggered
+        uint8_t SD_CMD : 1;     // is shutdown pending
+        uint8_t SLEEP : 1;      // is device in SLEEP mode
+    };
+    uint8_t bytes[2];
+} BATTERY_STATUS_Type;
+
+typedef union {
     struct
     {
         uint8_t CHG_FET : 1;

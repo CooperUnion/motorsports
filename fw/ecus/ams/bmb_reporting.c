@@ -90,4 +90,28 @@ FOREACH_BMB(CANTX_BMBSTATUS)
 
 FOREACH_BMB(CANTX_BMBFAULTS)
 
+#define CANTX_BATTERYSTATUS(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_BatteryStatus( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_BatteryStatus * const m) {  \
+        const BATTERY_STATUS_Type battery_status = bmbs[BMB_##BMB_NUM].status.battery_status; \
+                                                                                            \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_configUpdateMode    = battery_status.CFGUPDATE; \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_prechargeMode       = battery_status.PCHG_MODE; \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_sleepEn             = battery_status.SLEEP_EN;  \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_powerOnResetHappened= battery_status.POR;       \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_previousResetWasWatchdog = battery_status.WD;   \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_cellOpenWireChecksRunning = battery_status.COW_CHK; \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_otpPending = battery_status.OTPW;  \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_otpConditionsValid = battery_status.OTPB;   \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_sec0 = battery_status.SEC0;  \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_sec1 = battery_status.SEC1;  \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_fusePinState = battery_status.FUSE;  \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_safetyFaultTriggered = battery_status.SS; \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_permanentFaultTriggered = battery_status.PF; \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_shutdownPending = battery_status.SD_CMD; \
+        m->AMS_bmb##BMB_NUM##_batteryStatus_inSleepMode = battery_status.SLEEP; \
+    }
+
+FOREACH_BMB(CANTX_BATTERYSTATUS)
+
 // do what's right | made with <3 at Cooper Union
