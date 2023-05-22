@@ -532,6 +532,9 @@ void bms_update_error_flags(Bms *bms)
     // error_flags |= 1U << BMS_ERR_CELL_FAILURE;
 
     bms->status.error_flags = error_flags;
+    bms->status.safety_status_A = stat_a;
+    bms->status.safety_status_B = stat_b;
+    bms->status.safety_status_C = stat_c;
 }
 
 void bms_handle_errors(Bms *bms)

@@ -200,6 +200,141 @@ nodes:
         signals:
         - bmb4_balancingStatus:
             width: 16
+
+    # --- Faults --- #
+    - Bmb0_Faults:
+        id: 0x90
+        cycletime: 100
+        signals:
+        - bmb0_safetyA_cellUndervoltage: &bool_fault
+            enumerated_values:
+            - OK: 0
+            - FAULT: 1
+        - bmb0_safetyA_cellOvervoltage: *bool_fault
+        - bmb0_safetyA_cellChargeOvercurrent: *bool_fault
+        - bmb0_safetyA_cellDischarge1Overcurrent: *bool_fault
+        - bmb0_safetyA_cellDischarge2Overcurrent: *bool_fault
+        - bmb0_safetyA_cellDischargeShortCircuit: *bool_fault
+
+        - bmb0_safetyB_cellChargeUndertemperature: *bool_fault
+        - bmb0_safetyB_cellDischargeUndertemperature: *bool_fault
+        - bmb0_safetyB_internalDieUndertemperature: *bool_fault
+        - bmb0_safetyB_chargeOvertemperature: *bool_fault
+        - bmb0_safetyB_dischargeOvertemperature: *bool_fault
+        - bmb0_safetyB_internalDieOvertemperature: *bool_fault
+        - bmb0_safetyB_fetOvertemperature: *bool_fault
+
+        - bmb0_safetyC_hostWatchdogSafetyFault: *bool_fault
+        - bmb0_safetyC_prechargeTimeout: *bool_fault
+        - bmb0_safetyC_latchedCellOvervoltage: *bool_fault
+        - bmb0_safetyC_latchedDischargeOvercurrent: *bool_fault
+        - bmb0_safetyC_latchedDischargeShortCircuit: *bool_fault
+        - bmb0_safetyC_overcurrentInDischarge3: *bool_fault
+
+    - Bmb1_Faults:
+        id: 0x91
+        cycletime: 100
+        signals:
+        - bmb1_safetyA_cellUndervoltage: *bool_fault
+        - bmb1_safetyA_cellOvervoltage: *bool_fault
+        - bmb1_safetyA_cellChargeOvercurrent: *bool_fault
+        - bmb1_safetyA_cellDischarge1Overcurrent: *bool_fault
+        - bmb1_safetyA_cellDischarge2Overcurrent: *bool_fault
+        - bmb1_safetyA_cellDischargeShortCircuit: *bool_fault
+
+        - bmb1_safetyB_cellChargeUndertemperature: *bool_fault
+        - bmb1_safetyB_cellDischargeUndertemperature: *bool_fault
+        - bmb1_safetyB_internalDieUndertemperature: *bool_fault
+        - bmb1_safetyB_chargeOvertemperature: *bool_fault
+        - bmb1_safetyB_dischargeOvertemperature: *bool_fault
+        - bmb1_safetyB_internalDieOvertemperature: *bool_fault
+        - bmb1_safetyB_fetOvertemperature: *bool_fault
+
+        - bmb1_safetyC_hostWatchdogSafetyFault: *bool_fault
+        - bmb1_safetyC_prechargeTimeout: *bool_fault
+        - bmb1_safetyC_latchedCellOvervoltage: *bool_fault
+        - bmb1_safetyC_latchedDischargeOvercurrent: *bool_fault
+        - bmb1_safetyC_latchedDischargeShortCircuit: *bool_fault
+        - bmb1_safetyC_overcurrentInDischarge3: *bool_fault
+
+    - Bmb2_Faults:
+        id: 0x92
+        cycletime: 100
+        signals:
+        - bmb2_safetyA_cellUndervoltage: *bool_fault
+        - bmb2_safetyA_cellOvervoltage: *bool_fault
+        - bmb2_safetyA_cellChargeOvercurrent: *bool_fault
+        - bmb2_safetyA_cellDischarge1Overcurrent: *bool_fault
+        - bmb2_safetyA_cellDischarge2Overcurrent: *bool_fault
+        - bmb2_safetyA_cellDischargeShortCircuit: *bool_fault
+
+        - bmb2_safetyB_cellChargeUndertemperature: *bool_fault
+        - bmb2_safetyB_cellDischargeUndertemperature: *bool_fault
+        - bmb2_safetyB_internalDieUndertemperature: *bool_fault
+        - bmb2_safetyB_chargeOvertemperature: *bool_fault
+        - bmb2_safetyB_dischargeOvertemperature: *bool_fault
+        - bmb2_safetyB_internalDieOvertemperature: *bool_fault
+        - bmb2_safetyB_fetOvertemperature: *bool_fault
+
+        - bmb2_safetyC_hostWatchdogSafetyFault: *bool_fault
+        - bmb2_safetyC_prechargeTimeout: *bool_fault
+        - bmb2_safetyC_latchedCellOvervoltage: *bool_fault
+        - bmb2_safetyC_latchedDischargeOvercurrent: *bool_fault
+        - bmb2_safetyC_latchedDischargeShortCircuit: *bool_fault
+        - bmb2_safetyC_overcurrentInDischarge3: *bool_fault
+
+    - Bmb3_Faults:
+        id: 0x93
+        cycletime: 100
+        signals:
+        - bmb3_safetyA_cellUndervoltage: *bool_fault
+        - bmb3_safetyA_cellOvervoltage: *bool_fault
+        - bmb3_safetyA_cellChargeOvercurrent: *bool_fault
+        - bmb3_safetyA_cellDischarge1Overcurrent: *bool_fault
+        - bmb3_safetyA_cellDischarge2Overcurrent: *bool_fault
+        - bmb3_safetyA_cellDischargeShortCircuit: *bool_fault
+
+        - bmb3_safetyB_cellChargeUndertemperature: *bool_fault
+        - bmb3_safetyB_cellDischargeUndertemperature: *bool_fault
+        - bmb3_safetyB_internalDieUndertemperature: *bool_fault
+        - bmb3_safetyB_chargeOvertemperature: *bool_fault
+        - bmb3_safetyB_dischargeOvertemperature: *bool_fault
+        - bmb3_safetyB_internalDieOvertemperature: *bool_fault
+        - bmb3_safetyB_fetOvertemperature: *bool_fault
+
+        - bmb3_safetyC_hostWatchdogSafetyFault: *bool_fault
+        - bmb3_safetyC_prechargeTimeout: *bool_fault
+        - bmb3_safetyC_latchedCellOvervoltage: *bool_fault
+        - bmb3_safetyC_latchedDischargeOvercurrent: *bool_fault
+        - bmb3_safetyC_latchedDischargeShortCircuit: *bool_fault
+        - bmb3_safetyC_overcurrentInDischarge3: *bool_fault
+
+    - Bmb4_Faults:
+        id: 0x94
+        cycletime: 100
+        signals:
+        - bmb4_safetyA_cellUndervoltage: *bool_fault
+        - bmb4_safetyA_cellOvervoltage: *bool_fault
+        - bmb4_safetyA_cellChargeOvercurrent: *bool_fault
+        - bmb4_safetyA_cellDischarge1Overcurrent: *bool_fault
+        - bmb4_safetyA_cellDischarge2Overcurrent: *bool_fault
+        - bmb4_safetyA_cellDischargeShortCircuit: *bool_fault
+
+        - bmb4_safetyB_cellChargeUndertemperature: *bool_fault
+        - bmb4_safetyB_cellDischargeUndertemperature: *bool_fault
+        - bmb4_safetyB_internalDieUndertemperature: *bool_fault
+        - bmb4_safetyB_chargeOvertemperature: *bool_fault
+        - bmb4_safetyB_dischargeOvertemperature: *bool_fault
+        - bmb4_safetyB_internalDieOvertemperature: *bool_fault
+        - bmb4_safetyB_fetOvertemperature: *bool_fault
+
+        - bmb4_safetyC_hostWatchdogSafetyFault: *bool_fault
+        - bmb4_safetyC_prechargeTimeout: *bool_fault
+        - bmb4_safetyC_latchedCellOvervoltage: *bool_fault
+        - bmb4_safetyC_latchedDischargeOvercurrent: *bool_fault
+        - bmb4_safetyC_latchedDischargeShortCircuit: *bool_fault
+        - bmb4_safetyC_overcurrentInDischarge3: *bool_fault
+
 - DASH:
 
 - MOM:

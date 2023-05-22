@@ -58,4 +58,36 @@ FOREACH_BMB(CANTX_CELLVOLTAGES_13_16)
 
 FOREACH_BMB(CANTX_BMBSTATUS)
 
+#define CANTX_BMBFAULTS(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_Faults( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_Faults * const m) {  \
+        const SAFETY_STATUS_A_Type safety_A = bmbs[BMB_##BMB_NUM].status.safety_status_A;   \
+        const SAFETY_STATUS_B_Type safety_B = bmbs[BMB_##BMB_NUM].status.safety_status_B;   \
+        const SAFETY_STATUS_C_Type safety_C = bmbs[BMB_##BMB_NUM].status.safety_status_C;   \
+                                                                                            \
+        m->AMS_bmb##BMB_NUM##_safetyA_cellUndervoltage              = safety_A.CUV;   \
+        m->AMS_bmb##BMB_NUM##_safetyA_cellOvervoltage               = safety_A.COV;   \
+        m->AMS_bmb##BMB_NUM##_safetyA_cellChargeOvercurrent         = safety_A.OCC;   \
+        m->AMS_bmb##BMB_NUM##_safetyA_cellDischarge1Overcurrent     = safety_A.OCD1;  \
+        m->AMS_bmb##BMB_NUM##_safetyA_cellDischarge2Overcurrent     = safety_A.OCD2;  \
+        m->AMS_bmb##BMB_NUM##_safetyA_cellDischargeShortCircuit     = safety_A.SCD;   \
+                                                                                      \
+        m->AMS_bmb##BMB_NUM##_safetyB_cellChargeUndertemperature    = safety_B.UTC;   \
+        m->AMS_bmb##BMB_NUM##_safetyB_cellDischargeUndertemperature = safety_B.UTD;   \
+        m->AMS_bmb##BMB_NUM##_safetyB_internalDieUndertemperature   = safety_B.UTINT; \
+        m->AMS_bmb##BMB_NUM##_safetyB_chargeOvertemperature         = safety_B.OTC;   \
+        m->AMS_bmb##BMB_NUM##_safetyB_dischargeOvertemperature      = safety_B.OTD;   \
+        m->AMS_bmb##BMB_NUM##_safetyB_internalDieOvertemperature    = safety_B.OTINT; \
+        m->AMS_bmb##BMB_NUM##_safetyB_fetOvertemperature            = safety_B.OTF;   \
+                                                                                      \
+        m->AMS_bmb##BMB_NUM##_safetyC_hostWatchdogSafetyFault       = safety_C.HWDF;  \
+        m->AMS_bmb##BMB_NUM##_safetyC_prechargeTimeout              = safety_C.PTO;   \
+        m->AMS_bmb##BMB_NUM##_safetyC_latchedCellOvervoltage        = safety_C.COVL;  \
+        m->AMS_bmb##BMB_NUM##_safetyC_latchedDischargeOvercurrent   = safety_C.OCDL;  \
+        m->AMS_bmb##BMB_NUM##_safetyC_latchedDischargeShortCircuit  = safety_C.SCDL;  \
+        m->AMS_bmb##BMB_NUM##_safetyC_overcurrentInDischarge3       = safety_C.OCD3;  \
+    }
+
+FOREACH_BMB(CANTX_BMBFAULTS)
+
 // do what's right | made with <3 at Cooper Union

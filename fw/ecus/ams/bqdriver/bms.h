@@ -1,5 +1,6 @@
 /*
  * Copyright (c) The Libre Solar Project Contributors
+ * Copyright (c) Cooper Motorsports Contributors
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,17 +11,7 @@
 #define BOARD_NUM_CELLS_MAX 16
 #define BOARD_NUM_THERMISTORS_MAX 8
 
-/** @file
- *
- * @brief
- * Battery Management System (BMS) module for different analog frontends
- */
-
-// #include "board.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "registers.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -150,6 +141,10 @@ typedef struct
     atomic time_t no_idle_timestamp;  ///< Stores last time of current > idle threshold
 
     atomic uint32_t error_flags; ///< Bit array for different BmsErrorFlag errors
+
+    atomic SAFETY_STATUS_A_Type safety_status_A; ///< Safety status A
+    atomic SAFETY_STATUS_B_Type safety_status_B; ///< Safety status B
+    atomic SAFETY_STATUS_C_Type safety_status_C; ///< Safety status C
 } BmsStatus;
 
 /**
