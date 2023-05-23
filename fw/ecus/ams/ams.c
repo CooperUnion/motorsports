@@ -44,7 +44,7 @@ static void ams_init()
     printf("initializing i2c...\n");
     bq769x2_init();
 
-    set_bmb_address((0x10 >> 1));
+    set_bmb_address((0x40 >> 1));
     // set_bmb_address((0x30 >> 1));
 
     // printf("starting bmb monitor task...\n");
@@ -81,7 +81,6 @@ static void ams_init()
 
     vTaskDelay(pdMS_TO_TICKS(2000));
 
-
     if (in_full_access_mode)
     {
         uint8_t value;
@@ -105,7 +104,7 @@ static void ams_init()
 
         // // I2C Address
         #define I2C_ADDR(a) (a >> 1)
-        uint8_t i2c_addr_config = 0x20;
+        uint8_t i2c_addr_config = 0x40;
         bq769x2_subcmd_write_u1(BQ769X2_SET_CONF_I2C_ADDR, i2c_addr_config);
 
         vTaskDelay(pdMS_TO_TICKS(50));
@@ -165,17 +164,17 @@ static void ams_init()
         }
 
         // :skull: :skull: :skull:
-        // // send OTP_WRITE()
-        // bq769x2_subcmd_cmd_only(BQ769X2_SUBCMD_OTP_WRITE);
+        // send OTP_WRITE()
+        bq769x2_subcmd_cmd_only(BQ769X2_SUBCMD_OTP_WRITE);
 
-        // vTaskDelay(pdMS_TO_TICKS(100));
-        // // Read from 0x40, and is 0x80 is read then the OTP was successfull
-        // uint8_t otp_write_result = 0;
-        // bq769x2_subcmd_read_u1(BQ769X2_SUBCMD_DATA_START, &otp_write_result);
-        // if (otp_write_result == 0x80)
-        // {
-        //     printf("OTP Written correctly !!\n");
-        // }
+        vTaskDelay(pdMS_TO_TICKS(100));
+        // Read from 0x40, and is 0x80 is read then the OTP was successfull
+        uint8_t otp_write_result = 0;
+        bq769x2_subcmd_read_u1(BQ769X2_SUBCMD_DATA_START, &otp_write_result);
+        if (otp_write_result == 0x80)
+        {
+            printf("OTP Written correctly !!\n");
+        }
 
         bq769x2_config_update_mode(false);
     }
@@ -241,7 +240,7 @@ static void ams_1Hz()
 
             // // // I2C Address
             // #define I2C_ADDR(a) (a >> 1)
-            // uint8_t i2c_addr_config = 0x10;
+            // uint8_t i2c_addr_config = 0x40;
             // bq769x2_subcmd_write_u1(BQ769X2_SET_CONF_I2C_ADDR, i2c_addr_config);
 
             // vTaskDelay(pdMS_TO_TICKS(50));
