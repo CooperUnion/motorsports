@@ -11,6 +11,3 @@ void app_main()
     /* begin running tasks */
     ember_tasking_begin();
 }
-
-// temp: remove when all ECUs have module_rf defined
-__attribute__((weak)) ember_rate_funcs_S module_rf = { NULL };
