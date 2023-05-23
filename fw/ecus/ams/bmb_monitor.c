@@ -1,5 +1,6 @@
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+#include <esp_timer.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 #include "bmbs.h"
 #include "bqdriver/interface.h"
@@ -46,17 +47,42 @@ static void set_current_bmb(Bmb_E bmb)
 void bmb_monitor_task(void * unused) {
     (void)unused;
 
+    int64_t last_config_update_time = 0;
+
     for (;;) {
-        // todo: only doing BMB_0 for now
-        // for (Bmb_E bmb = BMB_0; bmb < BMB_NUM_BMBS; bmb++) {
-            Bmb_E bmb = BMB_0; // todo: remove
+        // config update?
+        const int64_t UPDATE_INTERVAL_US = 10 * 1000 * 1000;
+        const bool config_update = (esp_timer_get_time() - last_config_update_time) > UPDATE_INTERVAL_US;
+
+        for (Bmb_E bmb = BMB_0; bmb < BMB_NUM_BMBS; bmb++) {
             set_current_bmb(bmb);
 
+            // apply config
+            if (config_update) {
+                const int conf_err = bq769x2_config_update_mode(true);
+
+                if (!conf_err) {
+                    bms_apply_balancing_conf(current_bmb);
+                }
+
+                bq769x2_config_update_mode(false);
+
+                vTaskDelay(pdMS_TO_TICKS(3));
+            }
+
+            // read data from bms
             bms_read_voltages(current_bmb);
             bms_update_error_flags(current_bmb);
             bms_update_balancing(current_bmb);
-        // }
-        vTaskDelay(pdMS_TO_TICKS(10));
+        }
+
+        // update last config update time
+        if (config_update) {
+            last_config_update_time = esp_timer_get_time();
+        }
+
+        // delay for a bit until next run
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }
 

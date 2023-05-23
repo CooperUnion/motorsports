@@ -328,6 +328,16 @@ void bms_soc_update(Bms *bms);
 int bms_configure(Bms *bms);
 
 /**
+ * @brief
+ *
+ * Apply balancing configuration
+ *
+ * @param bms
+ * @return 0 on success, otherwise negative error code.
+ */
+int bms_apply_balancing_conf(Bms *bms);
+
+/**
  * Reads all cell voltages to array cell_voltages[NUM_CELLS], updates battery_voltage and updates
  * ids of cells with min/max voltage
  *

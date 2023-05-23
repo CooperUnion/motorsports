@@ -15,6 +15,8 @@
 #include "ember_taskglue.h"
 #include "node_pins.h"
 
+static bool bmb_monitor_started = false;
+
 static void ams_init();
 static void ams_10Hz();
 static void ams_1Hz();
@@ -37,10 +39,6 @@ static void ams_init()
 
     printf("initializing i2c...\n");
     bq769x2_init();
-
-    printf("starting bmb monitor task...\n");
-    static TaskHandle_t bmb_monitor_handle;
-    xTaskCreatePinnedToCore(bmb_monitor_task, "BMB_MONITOR", 8192, 0, 3, &bmb_monitor_handle, 0);
 }
 
 static void ams_10Hz()
@@ -48,6 +46,12 @@ static void ams_10Hz()
     static bool led1 = false;
     gpio_set_level(NODE_BOARD_PIN_LED1, led1);
     led1 = !led1;
+
+    if (!bmb_monitor_started) {
+        printf("starting bmb monitor task...\n");
+        static TaskHandle_t bmb_monitor_handle;
+        xTaskCreatePinnedToCore(bmb_monitor_task, "BMB_MONITOR", 8192, 0, 3, &bmb_monitor_handle, 0);
+    }
 }
 
 static void ams_1Hz()
