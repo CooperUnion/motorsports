@@ -6,8 +6,8 @@ import os
 Import("env")
 
 # VERSIONS ------------------------------------------------
-env['RUST_VERSION']    = '1.68.2'
-env['OPENCAN_VERSION'] = 'b014266'
+env['RUST_VERSION']    = 'beta'
+env['OPENCAN_VERSION'] = '649770be'
 # ---------------------------------------------------------
 
 # venv & pip ----------------------------------------------
@@ -84,7 +84,7 @@ env['OPENCAN_CLI'] = env.Dir(env['ENV']['CARGO_HOME']).File('bin/opencan-cli')
 [opencan_cli_builder] = env.Command(
     env['OPENCAN_CLI'],
     env['CARGO'],
-    '$CARGO install --locked ' \
+    '$CARGO install --locked opencan-cli ' \
     '--git https://github.com/opencan/opencan --rev $OPENCAN_VERSION'
 )
 
