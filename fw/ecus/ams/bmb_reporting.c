@@ -128,4 +128,32 @@ FOREACH_BMB(CANTX_BMBFAULTS)
 
 FOREACH_BMB(CANTX_BATTERYSTATUS)
 
+#define CANTX_TEMPERATURES_1_4(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_Temperatures1_4( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_Temperatures1_4 * restrict const m) {     \
+        const int16_t *ntc_temp = bmbs[BMB_##BMB_NUM].ntc_temp;                    \
+        *m = (struct CAN_Message_AMS_Bmb##BMB_NUM##_Temperatures1_4) {              \
+            .AMS_bmb##BMB_NUM##_ntc1 = ntc_temp[0], \
+            .AMS_bmb##BMB_NUM##_ntc2 = ntc_temp[1], \
+            .AMS_bmb##BMB_NUM##_ntc3 = ntc_temp[2], \
+            .AMS_bmb##BMB_NUM##_ntc4 = ntc_temp[3], \
+        }; \
+    }
+
+#define CANTX_TEMPERATURES_5_8(BMB_NUM) \
+    void CANTX_populate_AMS_Bmb##BMB_NUM##_Temperatures5_8( \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_Temperatures5_8 * restrict const m) {     \
+        const int16_t *ntc_temp = bmbs[BMB_##BMB_NUM].ntc_temp;                    \
+        *m = (struct CAN_Message_AMS_Bmb##BMB_NUM##_Temperatures5_8) {              \
+            .AMS_bmb##BMB_NUM##_ntc5 = ntc_temp[4],    \
+            .AMS_bmb##BMB_NUM##_ntc6 = ntc_temp[5],    \
+            .AMS_bmb##BMB_NUM##_ntc7 = ntc_temp[6],    \
+            .AMS_bmb##BMB_NUM##_ntc8 = ntc_temp[7],    \
+        };                                             \
+    }
+
+FOREACH_BMB(CANTX_TEMPERATURES_1_4)
+FOREACH_BMB(CANTX_TEMPERATURES_5_8)
+
+
 // do what's right | made with <3 at Cooper Union

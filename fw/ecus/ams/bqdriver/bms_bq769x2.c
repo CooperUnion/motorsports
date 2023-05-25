@@ -478,6 +478,8 @@ void bms_read_voltages(Bms *bms)
         bq769x2_direct_read_i2(BQ769X2_CMD_VOLTAGE_CELL_1 + i * 2, &voltage);
         bms->status.cell_voltages[i] = voltage * 1e-3F; // unit: 1 mV
 
+        printf("cell%d: %d mV", voltage);
+
         if (bms->status.cell_voltages[i] > 0.5F) {
             conn_cells++;
             sum_voltages += bms->status.cell_voltages[i];

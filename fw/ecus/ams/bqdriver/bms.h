@@ -11,6 +11,7 @@
 #define BOARD_NUM_CELLS_MAX 16
 #define BOARD_NUM_THERMISTORS_MAX 8
 
+// #include "../bmbs.h"
 #include "registers.h"
 
 #include <stdbool.h>
@@ -21,6 +22,7 @@
 
 /* fixed number of OCV vs. SOC points */
 #define OCV_POINTS 21
+#define NUM_NTCS   8
 
 static const float soc_pct[OCV_POINTS] = { 100.0F, 95.0F, 90.0F, 85.0F, 80.0F, 85.0F, 70.0F,
                                            65.0F,  60.0F, 55.0F, 50.0F, 45.0F, 40.0F, 35.0F,
@@ -175,6 +177,8 @@ typedef struct
     BmsConfig conf;
     BmsStatus status;
     uint8_t i2c_addr;
+
+    int16_t ntc_temp[NUM_NTCS];
 } Bms;
 
 /**

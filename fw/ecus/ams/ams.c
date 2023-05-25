@@ -10,6 +10,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#include "bmbs.h"
 #include "bmb_monitor.h"
 #include "bqdriver/interface.h"
 #include "ember_taskglue.h"
@@ -51,6 +52,7 @@ static void ams_10Hz()
         printf("starting bmb monitor task...\n");
         static TaskHandle_t bmb_monitor_handle;
         xTaskCreatePinnedToCore(bmb_monitor_task, "BMB_MONITOR", 8192, 0, 3, &bmb_monitor_handle, 0);
+        bmb_monitor_started = true;
     }
 }
 

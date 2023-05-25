@@ -454,6 +454,92 @@ nodes:
         - bmb4_batteryStatus_shutdownPending: *yes_no
         - bmb4_batteryStatus_inSleepMode: *yes_no
 
+    # --- Battery Temperature --- #
+    - Bmb0_Temperatures1_4:
+        id: 0x100
+        cycletime: 100
+        signals:
+        - bmb0_ntc1: &ntctemp
+            width: 16
+            scale: 0.1
+            offset: 273.15
+            unit: C
+        - bmb0_ntc2: *ntctemp
+        - bmb0_ntc3: *ntctemp
+        - bmb0_ntc4: *ntctemp
+    - Bmb0_Temperatures5_8:
+        id: 0x101
+        cycletime: 100
+        signals:
+        - bmb0_ntc5: *ntctemp
+        - bmb0_ntc6: *ntctemp
+        - bmb0_ntc7: *ntctemp
+        - bmb0_ntc8: *ntctemp
+    - Bmb1_Temperatures1_4:
+        id: 0x102
+        cycletime: 100
+        signals:
+        - bmb1_ntc1: *ntctemp
+        - bmb1_ntc2: *ntctemp
+        - bmb1_ntc3: *ntctemp
+        - bmb1_ntc4: *ntctemp
+    - Bmb1_Temperatures5_8:
+        id: 0x103
+        cycletime: 100
+        signals:
+        - bmb1_ntc5: *ntctemp
+        - bmb1_ntc6: *ntctemp
+        - bmb1_ntc7: *ntctemp
+        - bmb1_ntc8: *ntctemp
+    - Bmb2_Temperatures1_4:
+        id: 0x104
+        cycletime: 100
+        signals:
+        - bmb2_ntc1: *ntctemp
+        - bmb2_ntc2: *ntctemp
+        - bmb2_ntc3: *ntctemp
+        - bmb2_ntc4: *ntctemp
+    - Bmb2_Temperatures5_8:
+        id: 0x105
+        cycletime: 100
+        signals:
+        - bmb2_ntc5: *ntctemp
+        - bmb2_ntc6: *ntctemp
+        - bmb2_ntc7: *ntctemp
+        - bmb2_ntc8: *ntctemp
+    - Bmb3_Temperatures1_4:
+        id: 0x106
+        cycletime: 100
+        signals:
+        - bmb3_ntc1: *ntctemp
+        - bmb3_ntc2: *ntctemp
+        - bmb3_ntc3: *ntctemp
+        - bmb3_ntc4: *ntctemp
+    - Bmb3_Temperatures5_8:
+        id: 0x107
+        cycletime: 100
+        signals:
+        - bmb3_ntc5: *ntctemp
+        - bmb3_ntc6: *ntctemp
+        - bmb3_ntc7: *ntctemp
+        - bmb3_ntc8: *ntctemp
+    - Bmb4_Temperatures1_4:
+        id: 0x108
+        cycletime: 100
+        signals:
+        - bmb4_ntc1: *ntctemp
+        - bmb4_ntc2: *ntctemp
+        - bmb4_ntc3: *ntctemp
+        - bmb4_ntc4: *ntctemp
+    - Bmb4_Temperatures5_8:
+        id: 0x109
+        cycletime: 100
+        signals:
+        - bmb4_ntc5: *ntctemp
+        - bmb4_ntc6: *ntctemp
+        - bmb4_ntc7: *ntctemp
+        - bmb4_ntc8: *ntctemp
+
 - DASH:
 
 - MOM:
