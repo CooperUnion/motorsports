@@ -223,22 +223,29 @@ int bms_apply_balancing_conf(Bms *bms)
     err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_RLX_MIN_DELTA, cell_voltage_delta);
     err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_RLX_STOP_DELTA, cell_voltage_delta);
 
-    /* same temperature limits as for normal discharging */
-    // int8_t utd_threshold = CLAMP(bms->conf.dis_ut_limit, -40, 120);
-    // int8_t otd_threshold = CLAMP(bms->conf.dis_ot_limit, -40, 120);
-    // err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MIN_CELL_TEMP, utd_threshold);
-    // err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MAX_CELL_TEMP, otd_threshold);
 
-    // /* relaxed status is defined based on global idle current thresholds */
-    // int16_t idle_current_threshold = bms->conf.bal_idle_current * 1000.0F;
-    // err += bq769x2_datamem_write_i2(BQ769X2_SET_DSG_CURR_TH, idle_current_threshold);
-    // err += bq769x2_datamem_write_i2(BQ769X2_SET_CHG_CURR_TH, idle_current_threshold);
+
+    /* same temperature limits as for normal discharging */
+    int8_t utd_threshold = CLAMP(bms->conf.dis_ut_limit, -40, 120);
+    int8_t otd_threshold = CLAMP(bms->conf.dis_ot_limit, -40, 120);
+    err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MIN_CELL_TEMP, utd_threshold);
+    err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MAX_CELL_TEMP, otd_threshold);
+
+    /* relaxed status is defined based on global idle current thresholds */
+    int16_t idle_current_threshold = bms->conf.bal_idle_current * 1000.0F;
+    err += bq769x2_datamem_write_i2(BQ769X2_SET_DSG_CURR_TH, 0);
+    err += bq769x2_datamem_write_i2(BQ769X2_SET_CHG_CURR_TH, 0);
+
+
 
     /* allow balancing of up to 4 cells (instead of only 1 by default) */
-    // err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_MAX_CELLS, 4);
+    err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_MAX_CELLS, 12);
 
     /* enable CB_RLX and CB_CHG */
     err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_CONF, 0x03);
+
+    uint8_t balancing_conf = 0b00001111;
+    bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_CONF, balancing_conf);
 
     return err;
 }
@@ -248,7 +255,21 @@ void bms_update_balancing(Bms *bms)
     uint16_t balancing_status;
     bq769x2_subcmd_read_u2(BQ769X2_SUBCMD_CB_ACTIVE_CELLS, &balancing_status);
 
+    // ----
+
     bms->status.balancing_status = balancing_status;
+    printf("balancing status: %s\n", byte2bitstr(balancing_status));
+
+    // BQ769X2_SET_CBAL_CONF
+    uint8_t balancing_config = 0;
+    bq769x2_datamem_read_u1(BQ769X2_SET_CBAL_CONF, &balancing_config);
+    printf("balancing CONFIG: %s\n", byte2bitstr(balancing_config));
+
+    printf("pack current: %f\n", bms->status.pack_current);
+    printf("error flags: %s\n", byte2bitstr(bms->status.error_flags));
+    uint8_t fet_options = 0;
+    printf("fet options: %s\n", byte2bitstr(bq769x2_datamem_read_u1(BQ769X2_SET_FET_OPTIONS, &fet_options)));
+
 }
 
 int bms_apply_dis_scp(Bms *bms)
