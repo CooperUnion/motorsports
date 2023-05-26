@@ -478,6 +478,8 @@ void bms_read_voltages(Bms *bms)
         bq769x2_direct_read_i2(BQ769X2_CMD_VOLTAGE_CELL_1 + i * 2, &voltage);
         bms->status.cell_voltages[i] = voltage * 1e-3F; // unit: 1 mV
 
+        printf("cell%d: %f V\n", i + 1, bms->status.cell_voltages[i]);
+
         if (bms->status.cell_voltages[i] > 0.5F) {
             conn_cells++;
             sum_voltages += bms->status.cell_voltages[i];
@@ -489,6 +491,7 @@ void bms_read_voltages(Bms *bms)
             v_min = bms->status.cell_voltages[i];
         }
     }
+
     bms->status.connected_cells = conn_cells;
     bms->status.cell_voltage_avg = sum_voltages / conn_cells;
     bms->status.cell_voltage_min = v_min;
@@ -497,8 +500,11 @@ void bms_read_voltages(Bms *bms)
     bq769x2_direct_read_i2(BQ769X2_CMD_VOLTAGE_PACK, &voltage);
     bms->status.pack_voltage = voltage * 1e-2F; // unit: 10 mV
 
-    bq769x2_direct_read_i2(BQ769X2_CMD_VOLTAGE_STACK, &voltage);
-    bms->status.stack_voltage = voltage * 1e-2F; // unit: 10 mV
+    printf("Pack Voltage: %f\n", bms->status.pack_voltage);
+    printf("\n");
+
+    // bq769x2_direct_read_i2(BQ769X2_CMD_VOLTAGE_STACK, &voltage);
+    // bms->status.stack_voltage = voltage * 1e-2F; // unit: 10 mV
 }
 
 void bms_update_error_flags(Bms *bms)
