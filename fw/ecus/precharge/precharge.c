@@ -7,18 +7,11 @@
 #define SOC_ADC_DMA_SUPPORTED 1
 #define ADC_CALI_SCHEME_CURVE_FITTING_SUPPORTED 1
 
-#include <sdkconfig.h>
-
-#include <soc/soc_caps.h>
-
 #include <esp_adc/adc_continuous.h>
 #include <esp_adc/adc_cali.h>
 #include <esp_adc/adc_cali_scheme.h>
-#include <esp_attr.h>
 #include <esp_timer.h>
 #include <driver/gpio.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
 #include <hal/adc_types.h>
 
 #include <ember_taskglue.h>
