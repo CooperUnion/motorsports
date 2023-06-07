@@ -10,10 +10,12 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#include <ember_bl_servicing.h>
+#include <ember_taskglue.h>
+#include <node_pins.h>
+
 #include "bmb_monitor.h"
 #include "bqdriver/interface.h"
-#include "ember_taskglue.h"
-#include "node_pins.h"
 
 static bool bmb_monitor_started = false;
 
@@ -57,6 +59,10 @@ static void ams_10Hz()
 static void ams_1Hz()
 {
 
+}
+
+bool ember_bl_servicing_cb_are_we_ready_to_reboot(void) {
+    return true; // todo
 }
 
 // do what's right | made with <3 at Cooper Union

@@ -30,6 +30,8 @@ message_templates:
 nodes:
 
 - AMS:
+    rx:
+    - UPD_UpdateControl_AMS
     messages:
     # --- Cell Voltages --- #
     - Bmb0_CellVoltages1_4:
