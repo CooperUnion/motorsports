@@ -147,6 +147,9 @@ static void pch_init(void) {
 static void pch_10Hz(void) {
     static bool led_state;
     gpio_set_level(NODE_BOARD_PIN_LED1, led_state);
+    gpio_set_level(NODE_BOARD_PIN_LED2, !led_state);
+    gpio_set_level(PRECHARGE_PIN_LED_D7, !led_state);
+    gpio_set_level(PRECHARGE_PIN_LED_D8, led_state);
     led_state = !led_state;
 }
 
