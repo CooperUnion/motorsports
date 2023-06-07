@@ -495,6 +495,18 @@ nodes:
         id: 0x602
 
 - DASH:
+    rx:
+    - UPD_UpdateControl_DASH
+- DASHBL:
+    rx:
+    - UPD_IsoTpTx_DASH
+    - UPD_UpdateControl_DASH
+    messages:
+    - IsoTpTx:
+        id: 0x603
+    - Status:
+        from_template: BlStatus
+        id: 0x604
 
 - MOM:
     messages:
@@ -511,6 +523,7 @@ nodes:
 - PCH:
     rx:
     - MOM_SystemCmd
+    - UPD_UpdateControl_PCH
     messages:
     - Status:
         cycletime: 20
@@ -533,8 +546,30 @@ nodes:
             width: 12
             unit: volts
             scale: 0.1
+- PCHBL:
+    rx:
+    - UPD_IsoTpTx_PCH
+    - UPD_UpdateControl_PCH
+    messages:
+    - IsoTpTx:
+        id: 0x605
+    - Status:
+        from_template: BlStatus
+        id: 0x606
 
 - SHUT:
+    rx:
+    - UPD_UpdateControl_SHUT
+- SHUTBL:
+    rx:
+    - UPD_IsoTpTx_SHUT
+    - UPD_UpdateControl_SHUT
+    messages:
+    - IsoTpTx:
+        id: 0x607
+    - Status:
+        from_template: BlStatus
+        id: 0x608
 
 - UPD:
     rx:
@@ -543,6 +578,21 @@ nodes:
     messages:
     - IsoTpTx_AMS:
         id: 0x630
+    - IsoTpTx_DASH:
+        id: 0x631
+    - IsoTpTx_PCH:
+        id: 0x632
+    - IsoTpTx_SHUT:
+        id: 0x633
     - UpdateControl_AMS:
         id: 0x6A0
+        from_template: UpdateControl
+    - UpdateControl_DASH:
+        id: 0x6A1
+        from_template: UpdateControl
+    - UpdateControl_PCH:
+        id: 0x6A2
+        from_template: UpdateControl
+    - UpdateControl_SHUT:
+        id: 0x6A3
         from_template: UpdateControl

@@ -14,6 +14,7 @@
 #include <driver/gpio.h>
 #include <hal/adc_types.h>
 
+#include <ember_bl_servicing.h>
 #include <ember_taskglue.h>
 #include <node_pins.h>
 #include <opencan_rx.h>
@@ -357,5 +358,18 @@ static void open_all_contactors_without_delay_or_checks(void) {
 }
 
 // ######   PUBLIC FUNCTIONS    ###### //
+
+/*
+ * Allow reboot if we're in IDLE or FAULT.
+*/
+bool ember_bl_servicing_cb_are_we_ready_to_reboot(void) {
+    switch (current_state()) {
+        case PCH_STATE_IDLE:
+        case PCH_STATE_FAULT:
+            return true;
+        default:
+            return false;
+    }
+}
 
 // do what's right | made with <3 at Cooper Union
