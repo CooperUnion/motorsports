@@ -1,5 +1,32 @@
 bitrate: 500000
 
+message_templates:
+- UpdateControl:
+    cycletime: 20
+
+    signals:
+        - updateSizeBytes:
+            description: Total update binary size in bytes.
+            width: 24
+        - currentIsoTpChunk:
+            description: Current isotp 4095-byte chunk.
+            width: 12
+
+- BlStatus:
+    cycletime: 20
+
+    signals:
+        - state:
+            enumerated_values:
+            - AWAIT_TRIGGER
+            - RECV_CHUNK
+            - CHECK_DESC
+            - COMMIT_CHUNK
+            - FINALIZE
+            - REBOOT_FW
+            - FAULT
+            - RESET
+
 nodes:
 
 - AMS:
@@ -454,6 +481,17 @@ nodes:
         - bmb4_batteryStatus_shutdownPending: *yes_no
         - bmb4_batteryStatus_inSleepMode: *yes_no
 
+- AMSBL:
+    rx:
+    - UPD_IsoTpTx_AMS
+    - UPD_UpdateControl_AMS
+    messages:
+    - IsoTpTx:
+        id: 0x601
+    - Status:
+        from_template: BlStatus
+        id: 0x602
+
 - DASH:
 
 - MOM:
@@ -495,3 +533,14 @@ nodes:
             scale: 0.1
 
 - SHUT:
+
+- UPD:
+    rx:
+    - AMSBL_IsoTpTx
+    - AMSBL_Status
+    messages:
+    - IsoTpTx_AMS:
+        id: 0x630
+    - UpdateControl_AMS:
+        id: 0x6A0
+        from_template: UpdateControl

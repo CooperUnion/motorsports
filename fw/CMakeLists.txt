@@ -13,4 +13,4 @@ set(EXCLUDE_COMPONENTS
         esp_local_ctrl mqtt esp-mqtt nghttp2 sdmmc tcp_transport wear_levelling
         jsmn tcpip_adapter unity vfs)
 
-project(node_firmware2)
+project(fsae_firmware)
