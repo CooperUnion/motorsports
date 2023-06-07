@@ -542,6 +542,8 @@ nodes:
             - FAULT
         - calibratedAdcMv:
             width: 12
+        - rawAdcMv:
+            width: 12
         - dcBusVoltage:
             width: 12
             unit: volts
