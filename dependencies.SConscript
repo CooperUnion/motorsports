@@ -6,7 +6,7 @@ import os
 Import("env")
 
 # VERSIONS ------------------------------------------------
-env['RUST_VERSION']    = 'beta'
+env['RUST_VERSION']    = '1.70.0'
 env['OPENCAN_VERSION'] = 'beae1fda'
 # ---------------------------------------------------------
 
