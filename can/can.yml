@@ -1,5 +1,8 @@
 bitrate: 500000
 
+include:
+- can/20210505-RMS-PM-and-RM-CAN-DB.dbc # ok the path lookup in opencan needs to be fixed :P
+
 message_templates:
 - UpdateControl:
     cycletime: 20
