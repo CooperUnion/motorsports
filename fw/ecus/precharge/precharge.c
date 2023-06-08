@@ -107,6 +107,9 @@ void CANTX_populate_PCH_Status(struct CAN_Message_PCH_Status * const m) {
     m->PCH_calibratedAdcMv = glo.last_adc_val_calibrated;
     m->PCH_rawAdcMv = glo.last_adc_val_raw;
     m->PCH_dcBusVoltage = glo.hvdc_voltage;
+    m->PCH_pcContactorState = gpio_get_level(PRECHARGE_PIN_PRECH_RELAY_CTRL);
+    m->PCH_airNegContactorState = gpio_get_level(PRECHARGE_PIN_AIR_NEG_CTRL);
+    m->PCH_airPosContactorState = gpio_get_level(PRECHARGE_PIN_AIR_POS_CTRL);
 }
 
 // ######    RATE FUNCTIONS     ###### //
