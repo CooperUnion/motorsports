@@ -548,6 +548,12 @@ nodes:
             width: 12
             unit: volts
             scale: 0.1
+        - pcContactorState: &contactor
+            enumerated_values:
+            - OPEN
+            - CLOSED
+        - airNegContactorState: *contactor
+        - airPosContactorState: *contactor
 - PCHBL:
     rx:
     - UPD_IsoTpTx_PCH
