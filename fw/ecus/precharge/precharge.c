@@ -70,6 +70,7 @@ static struct {
     adc_cali_handle_t adc1_cali_handle;
     atomic volatile uint32_t last_adc_val_raw;
     atomic uint32_t last_adc_val_calibrated;
+    atomic uint32_t last_adc_val_filtered;
 
     atomic float hvdc_voltage;
 } glo = {
@@ -81,6 +82,7 @@ static struct {
     .adc1_handle = NULL,
     .adc1_cali_handle = NULL,
     .last_adc_val_raw = 0U,
+    .last_adc_val_filtered = 0U,
 
     .hvdc_voltage = 0U,
 };
@@ -104,7 +106,7 @@ void CANTX_populate_PCH_Status(struct CAN_Message_PCH_Status * const m) {
     }
     m->PCH_state = state;
 
-    m->PCH_calibratedAdcMv = glo.last_adc_val_calibrated;
+    m->PCH_calibratedAdcMv = glo.last_adc_val_filtered;
     m->PCH_rawAdcMv = glo.last_adc_val_raw;
     m->PCH_dcBusVoltage = glo.hvdc_voltage;
 }
@@ -159,13 +161,16 @@ static void pch_1kHz(void) {
     int calibrated_adc_mv = 0;
     ESP_ERROR_CHECK(adc_cali_raw_to_voltage(glo.adc1_cali_handle, glo.last_adc_val_raw, &calibrated_adc_mv));
 
-    if (PRECHARGE_ADC_OFFSET_MV >= calibrated_adc_mv) {
+    glo.last_adc_val_calibrated = calibrated_adc_mv;
+    #define FILTER_ALPHA 0.005f
+
+    glo.last_adc_val_filtered += FILTER_ALPHA * (float)(calibrated_adc_mv - glo.last_adc_val_filtered);
+
+    if (PRECHARGE_ADC_OFFSET_MV >= glo.last_adc_val_filtered) {
         glo.hvdc_voltage = 0.0f;
     } else {
-        glo.hvdc_voltage = PRECHARGE_ADC_GAIN_ISOAMP_MV_TO_V * (calibrated_adc_mv - PRECHARGE_ADC_OFFSET_MV);
+        glo.hvdc_voltage = PRECHARGE_ADC_GAIN_ISOAMP_MV_TO_V * (glo.last_adc_val_filtered - PRECHARGE_ADC_OFFSET_MV);
     }
-
-    glo.last_adc_val_calibrated = calibrated_adc_mv;
 
     const bool mom_present = CANRX_is_node_MOM_ok();
     enum CAN_MOM_tractiveSystemRunlevel runlevel = CANRX_get_MOM_tractiveSystemRunlevel();
@@ -331,7 +336,7 @@ static void configure_hvdc_adc(void) {
         .pattern_num = 1,  // one channel
         .adc_pattern = &(adc_digi_pattern_config_t){
             .atten = ADC_ATTEN_DB_11,
-            .channel = ADC_CHANNEL_5,
+            .channel = ADC_CHANNEL_8,
             .unit = ADC_UNIT_1,
             .bit_width = 12,
         },
