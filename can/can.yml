@@ -1,7 +1,7 @@
 bitrate: 500000
 
 include:
-- can/20210505-RMS-PM-and-RM-CAN-DB.dbc # ok the path lookup in opencan needs to be fixed :P
+- ./20210505-RMS-PM-and-RM-CAN-DB.dbc
 
 message_templates:
 - UpdateControl:
@@ -497,13 +497,13 @@ nodes:
         from_template: BlStatus
         id: 0x602
 
-- DASH:
+- VCU:
     rx:
-    - UPD_UpdateControl_DASH
-- DASHBL:
+    - UPD_UpdateControl_VCU
+- VCUBL:
     rx:
-    - UPD_IsoTpTx_DASH
-    - UPD_UpdateControl_DASH
+    - UPD_IsoTpTx_VCU
+    - UPD_UpdateControl_VCU
     messages:
     - IsoTpTx:
         id: 0x603
@@ -583,7 +583,7 @@ nodes:
     messages:
     - IsoTpTx_AMS:
         id: 0x630
-    - IsoTpTx_DASH:
+    - IsoTpTx_VCU:
         id: 0x631
     - IsoTpTx_PCH:
         id: 0x632
@@ -592,7 +592,7 @@ nodes:
     - UpdateControl_AMS:
         id: 0x6A0
         from_template: UpdateControl
-    - UpdateControl_DASH:
+    - UpdateControl_VCU:
         id: 0x6A1
         from_template: UpdateControl
     - UpdateControl_PCH:
