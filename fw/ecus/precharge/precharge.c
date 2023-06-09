@@ -24,7 +24,8 @@
 
 // ######   DEFINES & TYPES     ###### //
 
-#define PRECHARGE_CONNECT_THRESHOLD_V   (32.0f)
+#define NOMINAL_DC_V                    (60.0f)
+#define PRECHARGE_CONNECT_THRESHOLD_V   (0.95 * NOMINAL_DC_V)
 #define MAX_PRECHARGE_TIME_MS           (100.0f)
 
 #define atomic _Atomic
@@ -107,6 +108,9 @@ void CANTX_populate_PCH_Status(struct CAN_Message_PCH_Status * const m) {
     m->PCH_calibratedAdcMv = glo.last_adc_val_calibrated;
     m->PCH_rawAdcMv = glo.last_adc_val_raw;
     m->PCH_dcBusVoltage = glo.hvdc_voltage;
+    m->PCH_pcContactorState = gpio_get_level(PRECHARGE_PIN_PRECH_RELAY_CTRL);
+    m->PCH_airNegContactorState = gpio_get_level(PRECHARGE_PIN_AIR_NEG_CTRL);
+    m->PCH_airPosContactorState = gpio_get_level(PRECHARGE_PIN_AIR_POS_CTRL);
 }
 
 // ######    RATE FUNCTIONS     ###### //
@@ -129,7 +133,7 @@ static void pch_init(void) {
             BIT64(PRECHARGE_PIN_AIR_NEG_CTRL) |
             BIT64(PRECHARGE_PIN_AIR_POS_CTRL) |
             BIT64(PRECHARGE_PIN_PRECH_RELAY_CTRL),
-        .mode = GPIO_MODE_OUTPUT,
+        .mode = GPIO_MODE_INPUT_OUTPUT,
     }));
 
     open_all_contactors_without_delay_or_checks();
@@ -212,7 +216,8 @@ static void pch_1kHz(void) {
                 break;
             }
 
-            if (glo.hvdc_voltage >= PRECHARGE_CONNECT_THRESHOLD_V) {
+            if (glo.hvdc_voltage >= PRECHARGE_CONNECT_THRESHOLD_V &&
+                time_in_state() > 1000U) {
                 gpio_set_level(PRECHARGE_PIN_AIR_POS_CTRL, 0);
                 gpio_set_level(PRECHARGE_PIN_AIR_POS_CTRL, 1);
                 set_state(PCH_STATE_CONNECTED);
@@ -237,6 +242,7 @@ static void pch_1kHz(void) {
 
             if (mom_says_no_hv || !mom_present) {
                 set_state(PCH_STATE_DISCONNECTING);
+                printf("lost mom while connected: %d %d, disconnecting.\n", mom_says_no_hv, mom_present);
                 break;
             }
 
@@ -331,7 +337,7 @@ static void configure_hvdc_adc(void) {
         .pattern_num = 1,  // one channel
         .adc_pattern = &(adc_digi_pattern_config_t){
             .atten = ADC_ATTEN_DB_11,
-            .channel = ADC_CHANNEL_5,
+            .channel = ADC_CHANNEL_8,
             .unit = ADC_UNIT_1,
             .bit_width = 12,
         },
