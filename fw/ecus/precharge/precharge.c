@@ -240,11 +240,17 @@ static void pch_1kHz(void) {
             //     set_state(PCH_STATE_FAULT);
             // }
 
-            if (mom_says_no_hv || !mom_present) {
+            if (mom_says_no_hv) {
                 set_state(PCH_STATE_DISCONNECTING);
-                printf("lost mom while connected: %d %d, disconnecting.\n", mom_says_no_hv, mom_present);
+                printf("mom said no hv.\n");
                 break;
             }
+
+            // if (mom_says_no_hv || !mom_present) {
+            //     set_state(PCH_STATE_DISCONNECTING);
+            //     printf("lost mom while connected: %d %d, disconnecting.\n", mom_says_no_hv, mom_present);
+            //     break;
+            // }
 
             break;
 
@@ -337,7 +343,7 @@ static void configure_hvdc_adc(void) {
         .pattern_num = 1,  // one channel
         .adc_pattern = &(adc_digi_pattern_config_t){
             .atten = ADC_ATTEN_DB_11,
-            .channel = ADC_CHANNEL_8,
+            .channel = ADC_CHANNEL_7,
             .unit = ADC_UNIT_1,
             .bit_width = 12,
         },
