@@ -64,8 +64,11 @@ FOREACH_BMB(CANTX_CELLVOLTAGES_13_16)
 
 #define CANTX_BMBSTATUS(BMB_NUM) \
     void CANTX_populate_AMS_Bmb##BMB_NUM##_Status( \
-    struct CAN_Message_AMS_Bmb##BMB_NUM##_Status * restrict const m) {  \
-        m->AMS_bmb##BMB_NUM##_balancingStatus = bmbs[BMB_##BMB_NUM].status.balancing_status; \
+    struct CAN_Message_AMS_Bmb##BMB_NUM##_Status * restrict const m) {                          \
+        *m = (struct CAN_Message_AMS_Bmb##BMB_NUM##_Status) {                                   \
+            .AMS_bmb##BMB_NUM##_balancingStatus = bmbs[BMB_##BMB_NUM].status.balancing_status,  \
+            .AMS_bmb##BMB_NUM##_internalTemperature = bmbs[BMB_##BMB_NUM].status.ic_temp,       \
+        }; \
     }
 
 FOREACH_BMB(CANTX_BMBSTATUS)

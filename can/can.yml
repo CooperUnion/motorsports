@@ -208,30 +208,37 @@ nodes:
         signals:
         - bmb0_balancingStatus:
             width: 16
+        - bmb0_internalTemperature: &bmb_int_temp
+            width: 11
+            scale: 0.1
     - Bmb1_Status:
         id: 0x81
         cycletime: 100
         signals:
         - bmb1_balancingStatus:
             width: 16
+        - bmb1_internalTemperature: *bmb_int_temp
     - Bmb2_Status:
         id: 0x82
         cycletime: 100
         signals:
         - bmb2_balancingStatus:
             width: 16
+        - bmb2_internalTemperature: *bmb_int_temp
     - Bmb3_Status:
         id: 0x83
         cycletime: 100
         signals:
         - bmb3_balancingStatus:
             width: 16
+        - bmb3_internalTemperature: *bmb_int_temp
     - Bmb4_Status:
         id: 0x84
         cycletime: 100
         signals:
         - bmb4_balancingStatus:
             width: 16
+        - bmb4_internalTemperature: *bmb_int_temp
 
     # --- Faults --- #
     - Bmb0_Faults:

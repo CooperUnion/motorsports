@@ -224,10 +224,11 @@ int bms_apply_balancing_conf(Bms *bms)
     err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_RLX_STOP_DELTA, cell_voltage_delta);
 
     /* same temperature limits as for normal discharging */
-    // int8_t utd_threshold = CLAMP(bms->conf.dis_ut_limit, -40, 120);
-    // int8_t otd_threshold = CLAMP(bms->conf.dis_ot_limit, -40, 120);
-    // err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MIN_CELL_TEMP, utd_threshold);
-    // err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MAX_CELL_TEMP, otd_threshold);
+    int8_t utd_threshold = CLAMP(bms->conf.dis_ut_limit, -128, 127);
+    int8_t otd_threshold = CLAMP(bms->conf.dis_ot_limit, -128, 127);
+    err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MIN_CELL_TEMP, utd_threshold);
+    err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MAX_CELL_TEMP, otd_threshold);
+    err += bq769x2_datamem_write_i1(BQ769X2_SET_CBAL_MAX_INT_TEMP, 70);
 
     // /* relaxed status is defined based on global idle current thresholds */
     // int16_t idle_current_threshold = bms->conf.bal_idle_current * 1000.0F;
@@ -235,7 +236,7 @@ int bms_apply_balancing_conf(Bms *bms)
     // err += bq769x2_datamem_write_i2(BQ769X2_SET_CHG_CURR_TH, idle_current_threshold);
 
     /* allow balancing of up to 4 cells (instead of only 1 by default) */
-    // err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_MAX_CELLS, 4);
+    err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_MAX_CELLS, 8);
 
     /* enable CB_RLX and CB_CHG */
     err += bq769x2_datamem_write_u1(BQ769X2_SET_CBAL_CONF, 0x03);

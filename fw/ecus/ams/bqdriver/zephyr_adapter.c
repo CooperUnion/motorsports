@@ -25,7 +25,7 @@ int i2c_init(void) {
         .scl_io_num       = AMS_PIN_SCL,
         .sda_pullup_en    = GPIO_PULLUP_DISABLE,
         .scl_pullup_en    = GPIO_PULLUP_DISABLE,
-        .master.clk_speed = 1000, // 50kHz
+        .master.clk_speed = 50000, // 50kHz
     };
 
     ESP_ERROR_CHECK(i2c_param_config(BMS_IC_I2C_HOST, &conf));
