@@ -193,7 +193,7 @@ static void pch_1kHz(void) {
             // }
 
             // wait for CAN command
-            if (mom_says_please_hv && !mom_says_please_hv_last) {
+            if ((mom_says_please_hv && !mom_says_please_hv_last) || time_in_state() > 10000U) {
                 gpio_set_level(PRECHARGE_PIN_AIR_NEG_CTRL, 1);
                 gpio_set_level(PRECHARGE_PIN_PRECH_RELAY_CTRL, 1);
                 set_state(PCH_STATE_PRECHARGING);
