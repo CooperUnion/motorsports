@@ -211,10 +211,10 @@ static void pch_1kHz(void) {
             //     break;
             // }
 
-            if (mom_says_no_hv || !mom_present) {
-                set_state(PCH_STATE_DISCONNECTING);
-                break;
-            }
+            // if (mom_says_no_hv || !mom_present) {
+            //     set_state(PCH_STATE_DISCONNECTING);
+            //     break;
+            // }
 
             if (glo.hvdc_voltage >= PRECHARGE_CONNECT_THRESHOLD_V &&
                 time_in_state() > 1000U) {
