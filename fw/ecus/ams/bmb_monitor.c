@@ -7,6 +7,8 @@
 #include "bqdriver/bms.h"
 
 static _Atomic bool bmb_monitor_busy;
+static _Atomic float bmb_monitor_lowest_cell_v;
+static _Atomic float bmb_monitor_highest_cell_v;
 
 #define I2C_ADDR(a) (a >> 1)
 
@@ -52,6 +54,8 @@ void bmb_monitor_task(void * unused) {
     (void)unused;
 
     int64_t last_config_update_time = 0;
+    float lowest_cell = 999.9f;
+    float highest_cell = 0.0f;
 
     for (;;) {
         // config update?
@@ -95,6 +99,19 @@ void bmb_monitor_task(void * unused) {
             bms_read_temperatures(current_bmb);
             printf("temps: %f -- %f -- %f\n", current_bmb->status.bat_temp_min, current_bmb->status.mosfet_temp, current_bmb->status.ic_temp);
 
+            // update highest/lowest cell
+            for (uint8_t cell = 0; cell < 16; cell++) {
+                const float cell_voltage = current_bmb->status.cell_voltages[cell];
+
+                if (cell_voltage < lowest_cell) {
+                    lowest_cell = cell_voltage;
+                }
+
+                if (cell_voltage > highest_cell) {
+                    highest_cell = cell_voltage;
+                }
+            }
+
             bmb_monitor_busy = false;
         // }
 
@@ -102,6 +119,9 @@ void bmb_monitor_task(void * unused) {
         if (config_update) {
             last_config_update_time = esp_timer_get_time();
         }
+
+        bmb_monitor_lowest_cell_v = lowest_cell;
+        bmb_monitor_highest_cell_v = highest_cell;
 
         // delay for a bit until next run
         vTaskDelay(pdMS_TO_TICKS(5));
@@ -113,6 +133,20 @@ void bmb_monitor_task(void * unused) {
 */
 bool bmb_monitor_ready_for_reboot(void) {
     return !bmb_monitor_busy;
+}
+
+/*
+ * Get lowest cell voltage
+*/
+float bmb_monitor_get_lowest_cell_v(void) {
+    return bmb_monitor_lowest_cell_v;
+}
+
+/*
+ * Get highest cell voltage
+*/
+float bmb_monitor_get_highest_cell_v(void) {
+    return bmb_monitor_highest_cell_v;
 }
 
 // do what's right | made with <3 at Cooper Union

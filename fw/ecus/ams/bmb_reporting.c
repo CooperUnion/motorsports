@@ -1,6 +1,15 @@
 #include "bmbs.h"
 
-#include "opencan_tx.h"
+#include <opencan_tx.h>
+
+#include "bmb_monitor.h"
+
+void CANTX_populate_AMS_Extremes(struct CAN_Message_AMS_Extremes * restrict const m) {
+    *m = (struct CAN_Message_AMS_Extremes) {
+        .AMS_lowestCellV = bmb_monitor_get_lowest_cell_v(),
+        .AMS_highestCellV = bmb_monitor_get_highest_cell_v(),
+    };
+}
 
 #define FOREACH_BMB(action) \
     action(0) \

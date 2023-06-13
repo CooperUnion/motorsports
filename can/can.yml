@@ -36,15 +36,21 @@ nodes:
     rx:
     - UPD_UpdateControl_AMS
     messages:
+    - Extremes:
+        id: 0x60
+        cycletime: 100
+        signals:
+        - lowestCellV: &bmbcell
+            width: 16
+            scale: 0.001
+            unit: V
+        - highestCellV: *bmbcell
     # --- Cell Voltages --- #
     - Bmb0_CellVoltages1_4:
         id: 0x63
         cycletime: 100
         signals:
-        - bmb0_cell1: &bmbcell
-            width: 16
-            scale: 0.001
-            unit: V
+        - bmb0_cell1: *bmbcell
         - bmb0_cell2: *bmbcell
         - bmb0_cell3: *bmbcell
         - bmb0_cell4: *bmbcell
