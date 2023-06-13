@@ -513,6 +513,22 @@ nodes:
 - VCU:
     rx:
     - UPD_UpdateControl_VCU
+    messages:
+    - Pedal:
+        id: 0x30
+        cycletime: 5
+        signals:
+        - pedalEnc1Raw:
+            width: 12
+        - pedalEnc2Raw:
+            width: 12
+        - pedalEnc1Mv:
+            width: 12
+        - pedalEnc2Mv:
+            width: 12
+        - pedalPercentage:
+            width: 8
+
 - VCUBL:
     rx:
     - UPD_IsoTpTx_VCU
