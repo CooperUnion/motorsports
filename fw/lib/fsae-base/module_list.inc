@@ -34,3 +34,5 @@ ember_rate_funcs_S* ember_task_list[] = {
 };
 
 const size_t ember_task_count = ARRAY_SIZE(ember_task_list);
+
+// do what's right | made with <3 at Cooper Union

@@ -49,3 +49,5 @@ float pedal_to_torque(float pedal_percent) {
 
     return torque;
 }
+
+// do what's right | made with <3 at Cooper Union

@@ -151,3 +151,5 @@ static void configure_pedal_adc(void) {
 
 // ######   PUBLIC FUNCTIONS    ###### //
 
+
+// do what's right | made with <3 at Cooper Union

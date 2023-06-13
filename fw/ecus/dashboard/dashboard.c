@@ -34,3 +34,5 @@ static void dash_1kHz(void) {
 bool ember_bl_servicing_cb_are_we_ready_to_reboot(void) {
     return true; // todo
 }
+
+// do what's right | made with <3 at Cooper Union

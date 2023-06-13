@@ -15,3 +15,5 @@ void CANTX_populate_M192_Command_Message(struct CAN_Message_M192_Command_Message
         .Torque_Limit_Command   = 0.0f,
     };
 }
+
+// do what's right | made with <3 at Cooper Union
