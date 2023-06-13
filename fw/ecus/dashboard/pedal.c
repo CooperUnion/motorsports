@@ -59,6 +59,7 @@ void CANTX_populate_VCU_Pedal(struct CAN_Message_VCU_Pedal * const m) {
     *m = (struct CAN_Message_VCU_Pedal){
         .VCU_pedalEnc1Mv = glo.last_enc1_adc_val_calibrated,
         .VCU_pedalEnc2Mv = glo.last_enc2_adc_val_calibrated,
+        .VCU_pedalIrrational = glo.pedal_irrational,
         .VCU_pedalPercentage = glo.pedal_percentage,
         .VCU_pedalTorqueRequest = glo.pedal_torque_request,
     };

@@ -522,6 +522,8 @@ nodes:
             width: 12
         - pedalEnc2Mv:
             width: 12
+        - pedalIrrational:
+            width: 1
         - pedalPercentage:
             width: 8
         - pedalTorqueRequest:
