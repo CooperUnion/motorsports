@@ -8,10 +8,13 @@
 #include <esp_adc/adc_continuous.h>
 #include <esp_adc/adc_cali.h>
 #include <esp_adc/adc_cali_scheme.h>
+#include <esp_attr.h>
+#include <esp_macros.h>
 
 #include <opencan_tx.h>
 
 #include "dashboard_pins.h"
+#include "pedal_map.h"
 
 // ######   DEFINES & TYPES     ###### //
 
@@ -33,6 +36,7 @@ static struct {
     atomic uint32_t last_enc2_adc_val_calibrated;
 
     atomic float pedal_percentage;
+    atomic float pedal_torque_request;
 } glo = {
     .adc1_handle = NULL,
     .adc1_cali_handle = NULL,
@@ -43,17 +47,17 @@ static struct {
     .last_enc2_adc_val_calibrated = 0,
 
     .pedal_percentage = 0.0f,
+    .pedal_torque_request = 0.0f,
 };
 
 // ######          CAN          ###### //
 
 void CANTX_populate_VCU_Pedal(struct CAN_Message_VCU_Pedal * const m) {
     *m = (struct CAN_Message_VCU_Pedal){
-        .VCU_pedalEnc1Raw = glo.last_enc1_adc_val_raw,
-        .VCU_pedalEnc2Raw = glo.last_enc2_adc_val_raw,
         .VCU_pedalEnc1Mv = glo.last_enc1_adc_val_calibrated,
         .VCU_pedalEnc2Mv = glo.last_enc2_adc_val_calibrated,
         .VCU_pedalPercentage = glo.pedal_percentage,
+        .VCU_pedalTorqueRequest = glo.pedal_torque_request,
     };
 }
 
@@ -63,9 +67,21 @@ void pedal_init(void) {
     configure_pedal_adc();
 }
 
+void pedal_1kHz(void) {
+    int calibrated_enc1_mv = 0;
+    int calibrated_enc2_mv = 0;
+    ESP_ERROR_CHECK(adc_cali_raw_to_voltage(glo.adc1_cali_handle, glo.last_enc1_adc_val_raw, &calibrated_enc1_mv));
+    ESP_ERROR_CHECK(adc_cali_raw_to_voltage(glo.adc1_cali_handle, glo.last_enc2_adc_val_raw, &calibrated_enc2_mv));
+
+    glo.last_enc1_adc_val_calibrated = calibrated_enc1_mv;
+    glo.last_enc2_adc_val_calibrated = calibrated_enc2_mv;
+
+    glo.pedal_torque_request = pedal_to_torque(glo.pedal_percentage);
+}
+
 // ######   PRIVATE FUNCTIONS   ###### //
 
-static bool adc_callback(
+static IRAM_ATTR bool adc_callback(
     const adc_continuous_handle_t handle,
     const adc_continuous_evt_data_t * const edata,
     void * const user_data)
