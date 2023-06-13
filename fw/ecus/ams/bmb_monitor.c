@@ -34,14 +34,14 @@ Bms bmbs[BMB_NUM_BMBS] = {
         .conf = BMB_CONF,
         .i2c_addr = I2C_ADDR(0x30),
     },
-    [BMB_3] = {
-        .conf = BMB_CONF,
-        .i2c_addr = I2C_ADDR(0x40),
-    },
-    [BMB_4] = {
-        .conf = BMB_CONF,
-        .i2c_addr = I2C_ADDR(0x50),
-    },
+    // [BMB_3] = {
+    //     .conf = BMB_CONF,
+    //     .i2c_addr = I2C_ADDR(0x40),
+    // },
+    // [BMB_4] = {
+    //     .conf = BMB_CONF,
+    //     .i2c_addr = I2C_ADDR(0x50),
+    // },
 };
 
 static Bms *current_bmb = &bmbs[BMB_0];

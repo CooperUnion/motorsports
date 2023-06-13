@@ -14,9 +14,9 @@ void CANTX_populate_AMS_Extremes(struct CAN_Message_AMS_Extremes * restrict cons
 #define FOREACH_BMB(action) \
     action(0) \
     action(1) \
-    action(2) \
-    action(3) \
-    action(4)
+    action(2)
+    // action(3)
+    // action(4)
 
 #define CANTX_CELLVOLTAGES_1_4(BMB_NUM) \
     void CANTX_populate_AMS_Bmb##BMB_NUM##_CellVoltages1_4( \
