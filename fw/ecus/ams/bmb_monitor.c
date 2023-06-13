@@ -10,6 +10,8 @@ static _Atomic bool bmb_monitor_busy;
 static _Atomic float bmb_monitor_lowest_cell_v;
 static _Atomic float bmb_monitor_highest_cell_v;
 
+#define BALANCE_THRESHOLD   (0.1f)
+
 #define I2C_ADDR(a) (a >> 1)
 
 #define BMB_CONF {                          \
@@ -80,18 +82,6 @@ void bmb_monitor_task(void * unused) {
                 vTaskDelay(pdMS_TO_TICKS(3));
             }
 
-            static uint16_t counter;
-
-            // uint16_t balance = 0b010001000010100;
-            // bq769x2_subcmd_write_u2(BQ769X2_SUBCMD_CB_ACTIVE_CELLS, balance);
-            uint16_t threshold = 3300;
-            bq769x2_subcmd_read_u2(BQ769X2_SUBCMD_CB_SET_LVL, &threshold);
-
-            uint16_t cbstatus1 = 0;
-            // bq769x2_subcmd_read_u2(BQ769X2_SUBCMD_CBSTATUS1, &cbstatus1);
-            bq769x2_subcmd_read_u2(BQ769X2_SUBCMD_CBSTATUS1, &cbstatus1);
-            printf("cbstatus: %u, count: %u\n", cbstatus1, counter++);
-
             // read data from bms
             bms_read_voltages(current_bmb);
             bms_update_error_flags(current_bmb);
@@ -110,6 +100,17 @@ void bmb_monitor_task(void * unused) {
                 if (cell_voltage > highest_cell) {
                     highest_cell = cell_voltage;
                 }
+            }
+
+            const float biggest_cell_delta = highest_cell - lowest_cell;
+
+            if (biggest_cell_delta > BALANCE_THRESHOLD) {
+                uint16_t threshold = lowest_cell;
+                bq769x2_subcmd_read_u2(BQ769X2_SUBCMD_CB_SET_LVL, &threshold);
+
+                uint16_t cbstatus1 = 0;
+                bq769x2_subcmd_read_u2(BQ769X2_SUBCMD_CBSTATUS1, &cbstatus1);
+                printf("BALANCING: BMB %d cbstatus: %u\n", bmb, cbstatus1);
             }
 
             bmb_monitor_busy = false;
