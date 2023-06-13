@@ -19,6 +19,7 @@
 // ######   DEFINES & TYPES     ###### //
 
 #define atomic _Atomic
+#define CLAMP(x, low, high) ((x) > (high) ? (high) : ((x) < (low) ? (low) : (x)))
 
 // ######      PROTOTYPES       ###### //
 
@@ -35,6 +36,7 @@ static struct {
     atomic uint32_t last_enc1_adc_val_calibrated;
     atomic uint32_t last_enc2_adc_val_calibrated;
 
+    atomic bool pedal_irrational;
     atomic float pedal_percentage;
     atomic float pedal_torque_request;
 } glo = {
@@ -46,6 +48,7 @@ static struct {
     .last_enc1_adc_val_calibrated = 0,
     .last_enc2_adc_val_calibrated = 0,
 
+    .pedal_irrational = true,
     .pedal_percentage = 0.0f,
     .pedal_torque_request = 0.0f,
 };
@@ -76,7 +79,39 @@ void pedal_1kHz(void) {
     glo.last_enc1_adc_val_calibrated = calibrated_enc1_mv;
     glo.last_enc2_adc_val_calibrated = calibrated_enc2_mv;
 
-    glo.pedal_torque_request = pedal_to_torque(glo.pedal_percentage);
+    // are the pedals rational?
+    // todo: fill in values
+    const float PEDAL_RATIONALITY_MAX_PERCENT_DIFF = 0.05f;
+
+    const float ENC1_MIN_MV = 0.0f;
+    const float ENC1_MAX_MV = 5000.0f;
+
+    const float ENC2_MIN_MV = 0.0f;
+    const float ENC2_MAX_MV = 5000.0f;
+
+    const float enc1_percentage = (calibrated_enc1_mv - ENC1_MIN_MV) / (ENC1_MAX_MV - ENC1_MIN_MV);
+    const float enc2_percentage = (calibrated_enc2_mv - ENC2_MIN_MV) / (ENC2_MAX_MV - ENC2_MIN_MV);
+
+    const float percent_diff = enc1_percentage - enc2_percentage;
+
+    if (percent_diff >= PEDAL_RATIONALITY_MAX_PERCENT_DIFF) {
+        glo.pedal_irrational = true;
+        glo.pedal_percentage = 0.0f;
+        glo.pedal_torque_request = 0.0f;
+    } else {
+        glo.pedal_irrational = false;
+        // average two percentages
+        const float raw_percent = (enc1_percentage + enc2_percentage) / 2.0f;
+
+        const float PEDAL_DEADBAND_THRESHOLD = 0.02f;
+        if (raw_percent > PEDAL_DEADBAND_THRESHOLD) {
+            glo.pedal_percentage = raw_percent;
+            glo.pedal_torque_request = pedal_to_torque(raw_percent);
+        } else {
+            glo.pedal_percentage = 0.0f;
+            glo.pedal_torque_request = 0.0f;
+        }
+    }
 }
 
 // ######   PRIVATE FUNCTIONS   ###### //

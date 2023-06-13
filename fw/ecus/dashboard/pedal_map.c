@@ -13,7 +13,7 @@ struct pedal_map_point {
 static struct pedal_map_point pedal_map[] = {
     {0.0, 0.0},     // 0%, 0 Nm
     {0.25, 10.0},   // 25%, 20 Nm
-    {1.0, 100.0},   // 100% 100 Nm
+    {1.01, 100.0},   // 100% 100 Nm
 };
 
 float pedal_to_torque(float pedal_percent) {
