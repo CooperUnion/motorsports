@@ -582,6 +582,7 @@ nodes:
     rx:
     - MOM_SystemCmd
     - UPD_UpdateControl_PCH
+    - VCU_Status
     messages:
     - Status:
         cycletime: 20

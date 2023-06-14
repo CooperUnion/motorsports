@@ -168,15 +168,10 @@ static void pch_1kHz(void) {
     } else {
         glo.hvdc_voltage = PRECHARGE_ADC_GAIN_ISOAMP_MV_TO_V * (calibrated_adc_mv - PRECHARGE_ADC_OFFSET_MV);
     }
-
     glo.last_adc_val_calibrated = calibrated_adc_mv;
 
-    const bool mom_present = CANRX_is_node_MOM_ok();
-    enum CAN_MOM_tractiveSystemRunlevel runlevel = CANRX_get_MOM_tractiveSystemRunlevel();
-    const bool mom_says_please_hv = mom_present && runlevel == CAN_MOM_TRACTIVESYSTEMRUNLEVEL_PLEASE_HV;
-    const bool mom_says_no_hv = mom_present && runlevel == CAN_MOM_TRACTIVESYSTEMRUNLEVEL_ABSOLUTELY_NO_HV;
-
-    static bool mom_says_please_hv_last = false;
+    const bool vcu_ok = CANRX_is_node_VCU_ok();
+    const enum CAN_VCU_state vcu_state = CANRX_get_VCU_state();
 
     // main state machine
     switch (current_state()) {
@@ -193,7 +188,7 @@ static void pch_1kHz(void) {
             // }
 
             // wait for CAN command
-            if (mom_says_please_hv && !mom_says_please_hv_last) {
+            if (vcu_ok && vcu_state == CAN_VCU_STATE_PREPARE_TS) {
                 gpio_set_level(PRECHARGE_PIN_AIR_NEG_CTRL, 1);
                 gpio_set_level(PRECHARGE_PIN_PRECH_RELAY_CTRL, 1);
                 set_state(PCH_STATE_PRECHARGING);
@@ -205,13 +200,15 @@ static void pch_1kHz(void) {
 
         case PCH_STATE_PRECHARGING:
             // we are precharging.
+
+            // todo!!! re-enable check
             // if (time_in_state() > MAX_PRECHARGE_TIME_MS) {
             //     open_all_contactors_without_delay_or_checks();
             //     set_state(PCH_STATE_FAULT);
             //     break;
             // }
 
-            if (mom_says_no_hv || !mom_present) {
+            if (!vcu_ok || vcu_state != CAN_VCU_STATE_PREPARE_TS) {
                 set_state(PCH_STATE_DISCONNECTING);
                 break;
             }
@@ -224,33 +221,22 @@ static void pch_1kHz(void) {
                 break;
             }
 
-            // if (time_in_state() > 20000U) {
-            //     gpio_set_level(PRECHARGE_PIN_AIR_POS_CTRL, 1);
-            //     set_state(PCH_STATE_CONNECTED);
-            //     break;
-            // }
-
             break;
 
         case PCH_STATE_CONNECTED:
             // we are connected.
 
+            // todo!!! re-enable check and make it smarter?
             // // maybe if there's a dead short or something...
             // if (!is_high_voltage_present_on_tractive_system()) {
             //     set_state(PCH_STATE_FAULT);
             // }
 
-            if (mom_says_no_hv) {
+            if (!vcu_ok ||
+                (vcu_state != CAN_VCU_STATE_PREPARE_TS && vcu_state != CAN_VCU_STATE_DRIVE)) {
                 set_state(PCH_STATE_DISCONNECTING);
-                printf("mom said no hv.\n");
                 break;
             }
-
-            // if (mom_says_no_hv || !mom_present) {
-            //     set_state(PCH_STATE_DISCONNECTING);
-            //     printf("lost mom while connected: %d %d, disconnecting.\n", mom_says_no_hv, mom_present);
-            //     break;
-            // }
 
             break;
 
@@ -281,8 +267,6 @@ static void pch_1kHz(void) {
             set_state(PCH_STATE_FAULT);
             break;
     }
-
-    mom_says_please_hv_last = mom_says_please_hv;
 }
 
 // ######   PRIVATE FUNCTIONS   ###### //
