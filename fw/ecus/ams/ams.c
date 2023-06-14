@@ -13,11 +13,26 @@
 #include <ember_bl_servicing.h>
 #include <ember_taskglue.h>
 #include <node_pins.h>
+#include <opencan_tx.h>
 
 #include "bmb_monitor.h"
 #include "bqdriver/interface.h"
 
+// ######   DEFINES & TYPES     ###### //
+// ######      PROTOTYPES       ###### //
+// ######     PRIVATE DATA      ###### //
+
 static bool bmb_monitor_started = false;
+
+// ######          CAN          ###### //
+
+void CANTX_populate_AMS_Status(struct CAN_Message_AMS_Status * const m) {
+    *m = (struct CAN_Message_AMS_Status){
+        .AMS_state = CAN_AMS_STATE_OK, // todo!!!
+    };
+}
+
+// ######    RATE FUNCTIONS     ###### //
 
 static void ams_init();
 static void ams_10Hz();
@@ -61,6 +76,10 @@ static void ams_1Hz()
 {
 
 }
+
+// ######   PRIVATE FUNCTIONS   ###### //
+
+// ######   PUBLIC FUNCTIONS    ###### //
 
 bool ember_bl_servicing_cb_are_we_ready_to_reboot(void) {
     return bmb_monitor_ready_for_reboot();

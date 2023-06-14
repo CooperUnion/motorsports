@@ -187,5 +187,12 @@ static void configure_pedal_adc(void) {
 
 // ######   PUBLIC FUNCTIONS    ###### //
 
+bool pedal_irrational(void) {
+    return glo.pedal_irrational;
+}
+
+float pedal_percentage(void) {
+    return glo.pedal_percentage;
+}
 
 // do what's right | made with <3 at Cooper Union

@@ -36,6 +36,15 @@ nodes:
     rx:
     - UPD_UpdateControl_AMS
     messages:
+    - Status:
+        id: 0x61
+        cycletime: 5
+        signals:
+        - state:
+            enumerated_values:
+            - OK
+            - FAULT
+
     - Extremes:
         id: 0x60
         cycletime: 100
@@ -513,6 +522,8 @@ nodes:
 - VCU:
     rx:
     - UPD_UpdateControl_VCU
+    - AMS_Status
+    - PCH_Status
     messages:
     - Pedal:
         id: 0x30
@@ -587,6 +598,7 @@ nodes:
             - CLOSED
         - airNegContactorState: *contactor
         - airPosContactorState: *contactor
+
 - PCHBL:
     rx:
     - UPD_IsoTpTx_PCH
