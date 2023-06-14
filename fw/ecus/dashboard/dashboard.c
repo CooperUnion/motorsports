@@ -3,6 +3,7 @@
 #include <ember_bl_servicing.h>
 #include <ember_taskglue.h>
 #include <opencan_rx.h>
+#include <opencan_tx.h>
 
 #include "pedal.h"
 
@@ -11,13 +12,13 @@
 #define atomic _Atomic
 
 typedef enum {
-    INIT,
-    GLV_ONLY,
-    PREPARE_TS,
-    TS_WITH_NO_DRIVE,   // 10.4.2 Tractive System Active
-    DRIVE,              // 10.4.3 Ready To Drive
-    STOP_TS,
-    FAULT,
+    VCU_STATE_INIT,
+    VCU_STATE_GLV_ONLY,
+    VCU_STATE_PREPARE_TS,
+    VCU_STATE_TS_WITH_NO_DRIVE,   // 10.4.2 Tractive System Active
+    VCU_STATE_DRIVE,              // 10.4.3 Ready To Drive
+    VCU_STATE_STOP_TS,
+    VCU_STATE_FAULT,
 } vcu_state_E;
 
 // ######      PROTOTYPES       ###### //
@@ -36,10 +37,29 @@ static struct {
 } glo = {
     .enable_tractive_system_requested = false,
     .ready_to_drive_requested = false,
-    .vcu_state = INIT,
+    .vcu_state = VCU_STATE_INIT,
 };
 
 // ######          CAN          ###### //
+
+void CANTX_populate_VCU_Status(struct CAN_Message_VCU_Status * const m) {
+    typeof(m->VCU_state) state;
+
+    switch (glo.vcu_state) {
+        case VCU_STATE_INIT:            state = CAN_VCU_STATE_INIT; break;
+        case VCU_STATE_GLV_ONLY:        state = CAN_VCU_STATE_GLV_ONLY; break;
+        case VCU_STATE_PREPARE_TS:      state = CAN_VCU_STATE_PREPARE_TS; break;
+        case VCU_STATE_DRIVE:           state = CAN_VCU_STATE_DRIVE; break;
+        case VCU_STATE_STOP_TS:         state = CAN_VCU_STATE_STOP_TS; break;
+        case VCU_STATE_FAULT:           state = CAN_VCU_STATE_FAULT; break;
+        default:                        state = CAN_VCU_STATE_INIT; break;
+    }
+
+    *m = (struct CAN_Message_VCU_Status) {
+        .VCU_state = state,
+    };
+}
+
 // ######    RATE FUNCTIONS     ###### //
 
 static void dash_init(void);
@@ -60,41 +80,42 @@ static void dash_1kHz(void) {
     vcu_state_E next_state = glo.vcu_state;
 
     switch (glo.vcu_state) {
-        case INIT:
-            next_state = GLV_ONLY,
+        case VCU_STATE_INIT:
+            next_state = VCU_STATE_GLV_ONLY;
             break;
-        case GLV_ONLY:
+        case VCU_STATE_GLV_ONLY:
             if (glo.enable_tractive_system_requested) {
-                next_state = PREPARE_TS;
+                next_state = VCU_STATE_PREPARE_TS;
             }
             break;
-        case PREPARE_TS:
+        case VCU_STATE_PREPARE_TS:
             if (CANRX_get_PCH_state() == CAN_PCH_STATE_CONNECTED) {
-                next_state = TS_WITH_NO_DRIVE;
+                next_state = VCU_STATE_TS_WITH_NO_DRIVE;
             }
             break;
-        case TS_WITH_NO_DRIVE:
+        case VCU_STATE_TS_WITH_NO_DRIVE:
             if (glo.ready_to_drive_requested) {
-                next_state = DRIVE;
+                next_state = VCU_STATE_DRIVE;
             }
             break;
-        case DRIVE:
+        case VCU_STATE_DRIVE:
             if (glo.disable_tractive_system_requested) {
-                next_state = STOP_TS;
-            }
-        case STOP_TS:
-            if (CANRX_get_PCH_state() == CAN_PCH_STATE_IDLE) {
-                next_state = GLV_ONLY;
+                next_state = VCU_STATE_STOP_TS;
             }
             break;
-        case FAULT:
+        case VCU_STATE_STOP_TS:
+            if (CANRX_get_PCH_state() == CAN_PCH_STATE_IDLE) {
+                next_state = VCU_STATE_GLV_ONLY;
+            }
+            break;
+        case VCU_STATE_FAULT:
             // requires a GLV reset. No software reset possible.
             break;
     }
 
     // global fault check
     if (!is_everyone_else_healthy()) {
-        next_state = FAULT;
+        next_state = VCU_STATE_FAULT;
     }
 
     glo.vcu_state = next_state;
@@ -102,7 +123,7 @@ static void dash_1kHz(void) {
 
 // ######   PRIVATE FUNCTIONS   ###### //
 
-static bool is_everyone_else_ok(void) {
+static bool is_everyone_else_healthy(void) {
     return is_pch_healthy() && is_ams_healthy();
 }
 

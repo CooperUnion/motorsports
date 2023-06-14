@@ -525,9 +525,23 @@ nodes:
     - AMS_Status
     - PCH_Status
     messages:
+    - Status:
+        id: 0x11
+        cycletime: 5
+        signals:
+        - state:
+            enumerated_values:
+            - INIT
+            - GLV_ONLY
+            - PREPARE_TS
+            - TS_WITH_NO_DRIVE
+            - DRIVE
+            - STOP_TS
+            - FAULT
+
     - Pedal:
         id: 0x30
-        cycletime: 5
+        cycletime: 50
         signals:
         - pedalEnc1Mv:
             width: 12
