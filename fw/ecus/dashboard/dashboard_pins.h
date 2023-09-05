@@ -1,9 +1,9 @@
 #pragma once
 
 #define DASH_PIN_ENC2               3
-#define DASH_PIN_ENC2_ADC_CHAN      ADC_CHANNEL_3
+#define DASH_PIN_ENC2_ADC_CHAN      ADC_CHANNEL_2
 #define DASH_PIN_ENC1               5
-#define DASH_PIN_ENC1_ADC_CHAN      ADC_CHANNEL_5
+#define DASH_PIN_ENC1_ADC_CHAN      ADC_CHANNEL_4
 #define DASH_PIN_BRK_IN             9
 #define DASH_PIN_RTD_BUTTON         7
 #define DASH_PIN_SPEAKER            11

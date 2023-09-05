@@ -10,6 +10,7 @@
 #include <esp_adc/adc_cali_scheme.h>
 #include <esp_attr.h>
 #include <esp_macros.h>
+#include <esp_system.h>
 
 #include <opencan_tx.h>
 
@@ -36,6 +37,9 @@ static struct {
     atomic uint32_t last_enc1_adc_val_calibrated;
     atomic uint32_t last_enc2_adc_val_calibrated;
 
+    atomic uint32_t last_enc1_adc_val_cal_filtered;
+    atomic uint32_t last_enc2_adc_val_cal_filtered;
+
     atomic bool pedal_irrational;
     atomic float pedal_percentage;
     atomic float pedal_torque_request;
@@ -47,6 +51,9 @@ static struct {
     .last_enc2_adc_val_raw = 0,
     .last_enc1_adc_val_calibrated = 0,
     .last_enc2_adc_val_calibrated = 0,
+
+    .last_enc1_adc_val_cal_filtered = 0,
+    .last_enc2_adc_val_cal_filtered = 0,
 
     .pedal_irrational = true,
     .pedal_percentage = 0.0f,
@@ -72,6 +79,7 @@ void pedal_init(void) {
 }
 
 void pedal_1kHz(void) {
+    // get adc reading
     int calibrated_enc1_mv = 0;
     int calibrated_enc2_mv = 0;
     ESP_ERROR_CHECK(adc_cali_raw_to_voltage(glo.adc1_cali_handle, glo.last_enc1_adc_val_raw, &calibrated_enc1_mv));
@@ -79,6 +87,10 @@ void pedal_1kHz(void) {
 
     glo.last_enc1_adc_val_calibrated = calibrated_enc1_mv;
     glo.last_enc2_adc_val_calibrated = calibrated_enc2_mv;
+
+    // filter pedal values
+    glo.last_enc1_adc_val_cal_filtered = (glo.last_enc1_adc_val_cal_filtered * 0.99f) + (glo.last_enc1_adc_val_calibrated * 0.01f);
+    glo.last_enc2_adc_val_cal_filtered = (glo.last_enc2_adc_val_cal_filtered * 0.99f) + (glo.last_enc2_adc_val_calibrated * 0.01f);
 
     // are the pedals rational?
     // todo: fill in values
@@ -115,6 +127,11 @@ void pedal_1kHz(void) {
     }
 }
 
+void pedal_10Hz(void) {
+    printf("pedal 1: %lu, pedal 2: %lu\n", glo.last_enc1_adc_val_calibrated, glo.last_enc2_adc_val_calibrated);
+    printf("pedal 1f: %lu, pedal 2f: %lu\n", glo.last_enc1_adc_val_cal_filtered, glo.last_enc2_adc_val_cal_filtered);
+}
+
 // ######   PRIVATE FUNCTIONS   ###### //
 
 static IRAM_ATTR bool adc_callback(
@@ -125,17 +142,21 @@ static IRAM_ATTR bool adc_callback(
     (void)handle;
     (void)user_data;
 
+    // printf("in callback\n");
+
     const adc_digi_output_data_t * const data =
         (const adc_digi_output_data_t*)&(edata->conv_frame_buffer[0]);
 
     switch (data->type2.channel) {
         case DASH_PIN_ENC1_ADC_CHAN:
             glo.last_enc1_adc_val_raw = data->type2.data;
+            // glo.last_enc1_adc_val_raw++;
             break;
         case DASH_PIN_ENC2_ADC_CHAN:
             glo.last_enc2_adc_val_raw = data->type2.data;
             break;
         default:
+            glo.last_enc1_adc_val_raw = 8573;
             break;
     }
 
@@ -151,8 +172,8 @@ static void configure_pedal_adc(void) {
     }, &glo.adc1_cali_handle));
 
     ESP_ERROR_CHECK(adc_continuous_new_handle(&(adc_continuous_handle_cfg_t){
-        .max_store_buf_size = 800,
-        .conv_frame_size = 4 * 40,  // 4 bytes per conversion, 40 sample-wide frame
+        .max_store_buf_size = 8000,
+        .conv_frame_size = 4 * 400,  // 4 bytes per conversion, 40 sample-wide frame
     }, &glo.adc1_handle));
 
     adc_digi_pattern_config_t patterns[] = {
@@ -171,9 +192,9 @@ static void configure_pedal_adc(void) {
     };
 
     ESP_ERROR_CHECK(adc_continuous_config(glo.adc1_handle, &(adc_continuous_config_t){
-        .pattern_num = 2,  // two channels
+        .pattern_num = 1,  // two channels
         .adc_pattern = patterns,
-        .sample_freq_hz = 80000,
+        .sample_freq_hz = 40000,
         .conv_mode = ADC_CONV_SINGLE_UNIT_1,
         .format = ADC_DIGI_OUTPUT_FORMAT_TYPE2,
     }));

@@ -64,10 +64,12 @@ void CANTX_populate_VCU_Status(struct CAN_Message_VCU_Status * const m) {
 
 static void dash_init(void);
 static void dash_1kHz(void);
+static void dash_10Hz(void);
 
 ember_rate_funcs_S module_rf = {
     .call_init = dash_init,
     .call_1kHz = dash_1kHz,
+    .call_100Hz = dash_10Hz,
 };
 
 static void dash_init(void) {
@@ -119,6 +121,10 @@ static void dash_1kHz(void) {
     }
 
     glo.vcu_state = next_state;
+}
+
+static void dash_10Hz(void) {
+    pedal_10Hz();
 }
 
 // ######   PRIVATE FUNCTIONS   ###### //
